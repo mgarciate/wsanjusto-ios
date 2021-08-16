@@ -13,7 +13,7 @@ struct wsanjusto_iosApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            SplashView()
         }
     }
 }
