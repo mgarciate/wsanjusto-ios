@@ -45,7 +45,9 @@ class AuthenticationService: ObservableObject {
                 }
                 else {
                     if let updatedUser = Auth.auth().currentUser {
+                        #if DEBUG
                         print("Successfully updated display name for user [\(user.uid)] to [\(updatedUser.displayName ?? "(empty)")]")
+                        #endif
                         // force update the local user to trigger the publisher
                         self.user = updatedUser
                         completionHandler(.success(updatedUser))
@@ -60,15 +62,21 @@ class AuthenticationService: ObservableObject {
             Auth.auth().removeStateDidChangeListener(handle)
         }
         self.handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+            #if DEBUG
             print("Sign in state has changed.")
+            #endif
             self.user = user
             
             if let user = user {
+                #if DEBUG
                 let anonymous = user.isAnonymous ? "anonymously " : ""
                 print("User signed in \(anonymous)with user ID \(user.uid). Email: \(user.email ?? "(empty)"), display name: [\(user.displayName ?? "(empty)")]")
+                #endif
             }
             else {
+                #if DEBUG
                 print("User signed out.")
+                #endif
                 self.signIn()
             }
         }

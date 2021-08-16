@@ -20,12 +20,16 @@
 		0917B942269F5453004EC81A /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0917B941269F5453004EC81A /* Charts */; };
 		0917B945269F54BD004EC81A /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B944269F54BD004EC81A /* LineView.swift */; };
 		0917B94A269F5A17004EC81A /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B949269F5A17004EC81A /* Resources.swift */; };
+		0917B95626A01A34004EC81A /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B95526A01A34004EC81A /* SplashView.swift */; };
 		09405CD9269E263800211DC6 /* wsanjusto_iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09405CD8269E263800211DC6 /* wsanjusto_iosApp.swift */; };
 		09405CDB269E263800211DC6 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09405CDA269E263800211DC6 /* MainView.swift */; };
 		09405CDD269E263A00211DC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09405CDC269E263A00211DC6 /* Assets.xcassets */; };
 		09405CE0269E263A00211DC6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09405CDF269E263A00211DC6 /* Preview Assets.xcassets */; };
 		09405CE9269E266300211DC6 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09405CE8269E266300211DC6 /* DashboardView.swift */; };
 		09405CEE269E2E1500211DC6 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09405CED269E2E1500211DC6 /* ChartView.swift */; };
+		096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0926A04246009128C5 /* DashboardViewModel.swift */; };
+		096A5A0D26A04275009128C5 /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0C26A04275009128C5 /* ChartViewModel.swift */; };
+		096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +43,7 @@
 		0917B93C269F4387004EC81A /* MeasureItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureItemCardView.swift; sourceTree = "<group>"; };
 		0917B944269F54BD004EC81A /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		0917B949269F5A17004EC81A /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
+		0917B95526A01A34004EC81A /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		09405CD5269E263800211DC6 /* wsanjusto-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "wsanjusto-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09405CD8269E263800211DC6 /* wsanjusto_iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = wsanjusto_iosApp.swift; sourceTree = "<group>"; };
 		09405CDA269E263800211DC6 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -47,6 +52,9 @@
 		09405CE1269E263A00211DC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09405CE8269E266300211DC6 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		09405CED269E2E1500211DC6 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		096A5A0926A04246009128C5 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		096A5A0C26A04275009128C5 /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
+		096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +80,7 @@
 				09405CED269E2E1500211DC6 /* ChartView.swift */,
 				0917B912269E3350004EC81A /* HistoricalView.swift */,
 				0917B915269E3368004EC81A /* AboutView.swift */,
+				0917B95526A01A34004EC81A /* SplashView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -88,6 +97,9 @@
 		0917B91D269E48D5004EC81A /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				096A5A0926A04246009128C5 /* DashboardViewModel.swift */,
+				096A5A0C26A04275009128C5 /* ChartViewModel.swift */,
+				096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -260,13 +272,17 @@
 				09405CE9269E266300211DC6 /* DashboardView.swift in Sources */,
 				0917B934269EDA9E004EC81A /* Measure.swift in Sources */,
 				09405CD9269E263800211DC6 /* wsanjusto_iosApp.swift in Sources */,
+				096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */,
 				09405CEE269E2E1500211DC6 /* ChartView.swift in Sources */,
 				0917B921269E4928004EC81A /* AppDelegate.swift in Sources */,
 				0917B945269F54BD004EC81A /* LineView.swift in Sources */,
 				0917B916269E3368004EC81A /* AboutView.swift in Sources */,
+				096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */,
 				0917B930269ED8A1004EC81A /* AutenticationService.swift in Sources */,
 				0917B913269E3350004EC81A /* HistoricalView.swift in Sources */,
+				096A5A0D26A04275009128C5 /* ChartViewModel.swift in Sources */,
 				0917B94A269F5A17004EC81A /* Resources.swift in Sources */,
+				0917B95626A01A34004EC81A /* SplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,7 +411,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"wsanjusto-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
 				ENABLE_PREVIEWS = YES;
@@ -405,7 +421,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -419,7 +435,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"wsanjusto-ios/Preview Content\"";
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
 				ENABLE_PREVIEWS = YES;
@@ -429,7 +445,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
