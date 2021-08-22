@@ -117,11 +117,16 @@ fileprivate struct ProgressBar: View {
     @Binding var measure: Measure
     @Binding var progress: Double
     let type: ProgressBarType
-    private let gradient = AngularGradient(
-        gradient: Gradient(colors: [Color("RedDarkColor"), Color("RedLightColor"), .white]),
+    private let gradientHot = AngularGradient(
+        gradient: Gradient(colors: [ Color("RedDarkColor"), Color("RedLightColor"),.white]),
         center: .center,
         startAngle: .degrees(270),
         endAngle: .degrees(0))
+    private let gradientCold = AngularGradient(
+        gradient: Gradient(colors: [.white, Color("BlueLightColor"), Color("BlueDarkColor")]),
+        center: .center,
+        startAngle: .degrees(0),
+        endAngle: .degrees(90))
     
     var body: some View {
         ZStack {
@@ -129,13 +134,21 @@ fileprivate struct ProgressBar: View {
                 .stroke(lineWidth: 20.0)
                 .foregroundColor(Color("PrimaryColor"))
             
-            Circle()
-                .trim(from: 0.0, to: CGFloat(progress))
-                .stroke(gradient, style: StrokeStyle(lineWidth: 20.0, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color("RedColor"))
-                .rotationEffect(Angle(degrees: 270.0))
-                .animation(.linear(duration: 1.0))
-            //                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+            if progress >= 0 {
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(progress))
+                    .stroke(gradientHot, style: StrokeStyle(lineWidth: 20.0, lineCap: .round, lineJoin: .round))
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .animation(.linear(duration: 1.0))
+                //                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
+            } else {
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(abs(progress)))
+                    .stroke(gradientCold, style: StrokeStyle(lineWidth: 20.0, lineCap: .round, lineJoin: .round))
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .animation(.linear(duration: 1.0))
+                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+            }
 
             VStack(alignment: .center, spacing: -10) {
                 if type == .temperature {
