@@ -73,7 +73,8 @@ struct wsanjustowidgetEntryView : View {
                 HStack {
                     Spacer()
                     Label("San Justo", systemImage: "location")
-                        .padding(10)
+                        .lineLimit(1)
+                        .padding([.trailing, .top], 10)
                 }
                 Spacer()
                 HStack {
@@ -91,7 +92,8 @@ struct wsanjustowidgetEntryView : View {
                 HStack {
                     Spacer()
                     Label(entry.measure.dateString, systemImage: "icloud.and.arrow.down")
-                        .padding(10)
+                        .lineLimit(1)
+                        .padding([.trailing, .bottom], 10)
                 }
             }
         }
