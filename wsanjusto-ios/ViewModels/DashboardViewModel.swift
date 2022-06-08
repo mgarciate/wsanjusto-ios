@@ -6,6 +6,7 @@
 //
 
 import FirebaseDatabase
+import WidgetKit
 
 class DashboardViewModel: ObservableObject {
     @Published var measure = Measure.dummyData[0]
@@ -24,6 +25,7 @@ class DashboardViewModel: ObservableObject {
                 print("*** CURRENT DATA \(currentData)")
                 #endif
                 self?.update(measure: currentData)
+                WidgetCenter.shared.reloadAllTimelines()
                 // Only want the 1st value
                 return
             }
