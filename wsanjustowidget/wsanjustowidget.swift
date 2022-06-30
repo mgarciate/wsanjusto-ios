@@ -21,25 +21,22 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        let ref = Database.database().reference()
-        ref.child("/widget/measures/current").observeSingleEvent(of: .value) { snapshot in
-            guard let currentData = Measure.build(with: snapshot) else {
-                print("Cannot download current data")
+        Task {
+            do {
+                let measure = try await NetworkService<Measure>().get(endpoint: "weather/current")
+                let currentDate = Date()
+                let entry = SimpleEntry(date: currentDate, measure: measure)
+                let nextUpdateDate = Calendar.current.date(byAdding: .minute, value: 30, to: currentDate)!
+                let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
+                completion(timeline)
+                return
+            } catch {
+                print("Error", error)
                 let currentDate = Date()
                 let entry = SimpleEntry(date: currentDate, measure: Measure.dummyData[0])
                 let timeline = Timeline(entries: [entry], policy: .atEnd)
                 completion(timeline)
-                return
             }
-            #if DEBUG
-            print("*** WIDGET DATA \(currentData)")
-            #endif
-            let currentDate = Date()
-            let entry = SimpleEntry(date: currentDate, measure: currentData)
-            let nextUpdateDate = Calendar.current.date(byAdding: .minute, value: 30, to: currentDate)!
-            let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
-            print("timeline")
-            completion(timeline)
         }
     }
 }
