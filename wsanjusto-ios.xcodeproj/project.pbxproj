@@ -41,6 +41,7 @@
 		09847A95286DC3660034E719 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A92286DC3660034E719 /* FlagView.swift */; };
 		09847A97286DC7B40034E719 /* MainMiniView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A96286DC7B40034E719 /* MainMiniView.swift */; };
 		09847A98286DC7B40034E719 /* MainMiniView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A96286DC7B40034E719 /* MainMiniView.swift */; };
+		09847A9D286E4E510034E719 /* Tiempo San Justo de la Vega.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 09E94ACC2855D1CE00D7A8D7 /* Tiempo San Justo de la Vega.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		09E94ABD2851166A00D7A8D7 /* Measure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B933269EDA9E004EC81A /* Measure.swift */; };
 		09E94AD22855D1D000D7A8D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09E94AD12855D1D000D7A8D7 /* Assets.xcassets */; };
 		09E94AD82855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 09E94AD72855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -66,6 +67,13 @@
 			remoteGlobalIDString = 092FAB72284FBFE8007D95F4;
 			remoteInfo = wsanjustowidgetExtension;
 		};
+		09847A9E286E4E510034E719 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 09405CCD269E263800211DC6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09E94ACB2855D1CE00D7A8D7;
+			remoteInfo = "wsanjustowatchos WatchKit App";
+		};
 		09E94AD92855D1D000D7A8D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 09405CCD269E263800211DC6 /* Project object */;
@@ -85,6 +93,17 @@
 				092FAB81284FBFE9007D95F4 /* wsanjustowidgetExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09847AA0286E4E510034E719 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				09847A9D286E4E510034E719 /* Tiempo San Justo de la Vega.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		09E94AED2855D1D000D7A8D7 /* Embed App Extensions */ = {
@@ -383,11 +402,13 @@
 				09405CD2269E263800211DC6 /* Frameworks */,
 				09405CD3269E263800211DC6 /* Resources */,
 				092FAB82284FBFE9007D95F4 /* Embed App Extensions */,
+				09847AA0286E4E510034E719 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				092FAB80284FBFE9007D95F4 /* PBXTargetDependency */,
+				09847A9F286E4E510034E719 /* PBXTargetDependency */,
 			);
 			name = "wsanjusto-ios";
 			packageProductDependencies = (
@@ -584,6 +605,11 @@
 			target = 092FAB72284FBFE8007D95F4 /* wsanjustowidgetExtension */;
 			targetProxy = 092FAB7F284FBFE9007D95F4 /* PBXContainerItemProxy */;
 		};
+		09847A9F286E4E510034E719 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09E94ACB2855D1CE00D7A8D7 /* wsanjustowatchos WatchKit App */;
+			targetProxy = 09847A9E286E4E510034E719 /* PBXContainerItemProxy */;
+		};
 		09E94ADA2855D1D000D7A8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 09E94AD62855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension */;
@@ -611,7 +637,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.wsanjustowidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -640,7 +666,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.wsanjustowidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -701,7 +727,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -756,7 +782,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -783,7 +809,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -808,7 +834,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -829,8 +855,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IBSC_MODULE = wsanjustowatchos_WatchKit_Extension;
 				INFOPLIST_FILE = "wsanjustowatchos WatchKit App/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				MARKETING_VERSION = 1.4.0;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.mgarciate.wsanjusto;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp;
 				PRODUCT_NAME = "Tiempo San Justo de la Vega";
 				SDKROOT = watchos;
@@ -838,7 +866,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 8.0;
 			};
 			name = Debug;
 		};
@@ -855,8 +883,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IBSC_MODULE = wsanjustowatchos_WatchKit_Extension;
 				INFOPLIST_FILE = "wsanjustowatchos WatchKit App/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				MARKETING_VERSION = 1.4.0;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.mgarciate.wsanjusto;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp;
 				PRODUCT_NAME = "Tiempo San Justo de la Vega";
 				SDKROOT = watchos;
@@ -864,7 +894,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 8.0;
 			};
 			name = Release;
 		};
@@ -880,16 +910,16 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "wsanjustowatchos WatchKit Extension/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
+				INFOPLIST_KEY_CFBundleDisplayName = "sanjusto-watchos WatchKit Extension";
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = wsanjustowatchos_WatchKit_Extension.ComplicationController;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
@@ -897,7 +927,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 8.0;
 			};
 			name = Debug;
 		};
@@ -913,16 +943,16 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "wsanjustowatchos WatchKit Extension/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
+				INFOPLIST_KEY_CFBundleDisplayName = "sanjusto-watchos WatchKit Extension";
 				INFOPLIST_KEY_CLKComplicationPrincipalClass = wsanjustowatchos_WatchKit_Extension.ComplicationController;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_WKWatchOnly = YES;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
@@ -930,7 +960,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 8.0;
 			};
 			name = Release;
 		};
