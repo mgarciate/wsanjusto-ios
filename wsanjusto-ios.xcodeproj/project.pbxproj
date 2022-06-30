@@ -35,11 +35,13 @@
 		096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0926A04246009128C5 /* DashboardViewModel.swift */; };
 		096A5A0D26A04275009128C5 /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0C26A04275009128C5 /* ChartViewModel.swift */; };
 		096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */; };
+		09847A91286DBAA30034E719 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09405CDC269E263A00211DC6 /* Assets.xcassets */; };
+		09847A93286DC3660034E719 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A92286DC3660034E719 /* FlagView.swift */; };
+		09847A94286DC3660034E719 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A92286DC3660034E719 /* FlagView.swift */; };
+		09847A95286DC3660034E719 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A92286DC3660034E719 /* FlagView.swift */; };
+		09847A97286DC7B40034E719 /* MainMiniView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A96286DC7B40034E719 /* MainMiniView.swift */; };
+		09847A98286DC7B40034E719 /* MainMiniView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A96286DC7B40034E719 /* MainMiniView.swift */; };
 		09E94ABD2851166A00D7A8D7 /* Measure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B933269EDA9E004EC81A /* Measure.swift */; };
-		09E94ABF2851175900D7A8D7 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 09E94ABE2851175900D7A8D7 /* FirebaseDatabase */; };
-		09E94AC02851178100D7A8D7 /* Measure+Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B937269F3FC1004EC81A /* Measure+Database.swift */; };
-		09E94AC42851279F00D7A8D7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E94AC32851279F00D7A8D7 /* AppDelegate.swift */; };
-		09E94AC62851294300D7A8D7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 09E94AC52851294300D7A8D7 /* GoogleService-Info.plist */; };
 		09E94AD22855D1D000D7A8D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09E94AD12855D1D000D7A8D7 /* Assets.xcassets */; };
 		09E94AD82855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 09E94AD72855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		09E94ADD2855D1D000D7A8D7 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E94ADC2855D1D000D7A8D7 /* MainView.swift */; };
@@ -127,8 +129,8 @@
 		096A5A0926A04246009128C5 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		096A5A0C26A04275009128C5 /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
 		096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalViewModel.swift; sourceTree = "<group>"; };
-		09E94AC32851279F00D7A8D7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		09E94AC52851294300D7A8D7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		09847A92286DC3660034E719 /* FlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagView.swift; sourceTree = "<group>"; };
+		09847A96286DC7B40034E719 /* MainMiniView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMiniView.swift; sourceTree = "<group>"; };
 		09E94ACC2855D1CE00D7A8D7 /* Tiempo San Justo de la Vega.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tiempo San Justo de la Vega.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09E94AD12855D1D000D7A8D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		09E94AD72855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "wsanjustowatchos WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,7 +151,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				09E94ABF2851175900D7A8D7 /* FirebaseDatabase in Frameworks */,
 				092FAB78284FBFE8007D95F4 /* SwiftUI.framework in Frameworks */,
 				092FAB76284FBFE8007D95F4 /* WidgetKit.framework in Frameworks */,
 			);
@@ -185,6 +186,7 @@
 				0917B912269E3350004EC81A /* HistoricalView.swift */,
 				0917B915269E3368004EC81A /* AboutView.swift */,
 				0917B95526A01A34004EC81A /* SplashView.swift */,
+				09847A92286DC3660034E719 /* FlagView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -265,10 +267,9 @@
 			isa = PBXGroup;
 			children = (
 				092FAB7A284FBFE8007D95F4 /* wsanjustowidget.swift */,
+				09847A96286DC7B40034E719 /* MainMiniView.swift */,
 				092FAB7C284FBFE9007D95F4 /* Assets.xcassets */,
 				092FAB7E284FBFE9007D95F4 /* Info.plist */,
-				09E94AC52851294300D7A8D7 /* GoogleService-Info.plist */,
-				09E94AC32851279F00D7A8D7 /* AppDelegate.swift */,
 			);
 			path = wsanjustowidget;
 			sourceTree = "<group>";
@@ -369,7 +370,6 @@
 			);
 			name = wsanjustowidgetExtension;
 			packageProductDependencies = (
-				09E94ABE2851175900D7A8D7 /* FirebaseDatabase */,
 			);
 			productName = wsanjustowidgetExtension;
 			productReference = 092FAB73284FBFE8007D95F4 /* wsanjustowidgetExtension.appex */;
@@ -487,8 +487,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				09E94AFA2855DA5100D7A8D7 /* Colors.xcassets in Resources */,
+				09847A91286DBAA30034E719 /* Assets.xcassets in Resources */,
 				092FAB7D284FBFE9007D95F4 /* Assets.xcassets in Resources */,
-				09E94AC62851294300D7A8D7 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,10 +529,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				09E94AFD2855FBBB00D7A8D7 /* NetworkService.swift in Sources */,
-				09E94AC42851279F00D7A8D7 /* AppDelegate.swift in Sources */,
+				09847A97286DC7B40034E719 /* MainMiniView.swift in Sources */,
 				09E94ABD2851166A00D7A8D7 /* Measure.swift in Sources */,
+				09847A94286DC3660034E719 /* FlagView.swift in Sources */,
 				092FAB7B284FBFE8007D95F4 /* wsanjustowidget.swift in Sources */,
-				09E94AC02851178100D7A8D7 /* Measure+Database.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -544,6 +544,7 @@
 				0917B938269F3FC1004EC81A /* Measure+Database.swift in Sources */,
 				0917B93D269F4387004EC81A /* MeasureItemCardView.swift in Sources */,
 				09405CE9269E266300211DC6 /* DashboardView.swift in Sources */,
+				09847A93286DC3660034E719 /* FlagView.swift in Sources */,
 				0917B934269EDA9E004EC81A /* Measure.swift in Sources */,
 				09405CD9269E263800211DC6 /* wsanjusto_iosApp.swift in Sources */,
 				096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */,
@@ -566,9 +567,11 @@
 			files = (
 				09E94ADF2855D1D000D7A8D7 /* wsanjusto_iosApp.swift in Sources */,
 				09E94ADD2855D1D000D7A8D7 /* MainView.swift in Sources */,
+				09847A98286DC7B40034E719 /* MainMiniView.swift in Sources */,
 				09E94AF52855D30100D7A8D7 /* Measure.swift in Sources */,
 				09E94AF42855D2A200D7A8D7 /* MainViewViewModel.swift in Sources */,
 				09E94AFE2855FBBB00D7A8D7 /* NetworkService.swift in Sources */,
+				09847A95286DC3660034E719 /* FlagView.swift in Sources */,
 				09E94AE12855D1D000D7A8D7 /* ComplicationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1015,11 +1018,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0917B940269F5453004EC81A /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = Charts;
-		};
-		09E94ABE2851175900D7A8D7 /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0917B924269E4AC9004EC81A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
