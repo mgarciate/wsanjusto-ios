@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -17,8 +17,6 @@
 		0917B934269EDA9E004EC81A /* Measure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B933269EDA9E004EC81A /* Measure.swift */; };
 		0917B938269F3FC1004EC81A /* Measure+Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B937269F3FC1004EC81A /* Measure+Database.swift */; };
 		0917B93D269F4387004EC81A /* MeasureItemCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B93C269F4387004EC81A /* MeasureItemCardView.swift */; };
-		0917B942269F5453004EC81A /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 0917B941269F5453004EC81A /* Charts */; };
-		0917B945269F54BD004EC81A /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B944269F54BD004EC81A /* LineView.swift */; };
 		0917B94A269F5A17004EC81A /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B949269F5A17004EC81A /* Resources.swift */; };
 		0917B95626A01A34004EC81A /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0917B95526A01A34004EC81A /* SplashView.swift */; };
 		092FAB76284FBFE8007D95F4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 092FAB75284FBFE8007D95F4 /* WidgetKit.framework */; };
@@ -32,6 +30,7 @@
 		09405CE0269E263A00211DC6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09405CDF269E263A00211DC6 /* Preview Assets.xcassets */; };
 		09405CE9269E266300211DC6 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09405CE8269E266300211DC6 /* DashboardView.swift */; };
 		09405CEE269E2E1500211DC6 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09405CED269E2E1500211DC6 /* ChartView.swift */; };
+		0955F45F2C0F96F400FF637A /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0955F45D2C0F95B300FF637A /* Charts.framework */; };
 		096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0926A04246009128C5 /* DashboardViewModel.swift */; };
 		096A5A0D26A04275009128C5 /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0C26A04275009128C5 /* ChartViewModel.swift */; };
 		096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */; };
@@ -128,7 +127,6 @@
 		0917B933269EDA9E004EC81A /* Measure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Measure.swift; sourceTree = "<group>"; };
 		0917B937269F3FC1004EC81A /* Measure+Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Measure+Database.swift"; sourceTree = "<group>"; };
 		0917B93C269F4387004EC81A /* MeasureItemCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureItemCardView.swift; sourceTree = "<group>"; };
-		0917B944269F54BD004EC81A /* LineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
 		0917B949269F5A17004EC81A /* Resources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resources.swift; sourceTree = "<group>"; };
 		0917B95526A01A34004EC81A /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		092FAB73284FBFE8007D95F4 /* wsanjustowidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = wsanjustowidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,11 +143,13 @@
 		09405CE1269E263A00211DC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09405CE8269E266300211DC6 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		09405CED269E2E1500211DC6 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		0955F45D2C0F95B300FF637A /* Charts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Charts.framework; path = System/Library/Frameworks/Charts.framework; sourceTree = SDKROOT; };
 		096A5A0926A04246009128C5 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		096A5A0C26A04275009128C5 /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
 		096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalViewModel.swift; sourceTree = "<group>"; };
 		09847A92286DC3660034E719 /* FlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagView.swift; sourceTree = "<group>"; };
 		09847A96286DC7B40034E719 /* MainMiniView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMiniView.swift; sourceTree = "<group>"; };
+		09847AA1286E54300034E719 /* wsanjustowatchos WatchKit Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "wsanjustowatchos WatchKit Extension.entitlements"; sourceTree = "<group>"; };
 		09E94ACC2855D1CE00D7A8D7 /* Tiempo San Justo de la Vega.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tiempo San Justo de la Vega.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09E94AD12855D1D000D7A8D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		09E94AD72855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "wsanjustowatchos WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -179,8 +179,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0955F45F2C0F96F400FF637A /* Charts.framework in Frameworks */,
 				0917B928269E4AC9004EC81A /* FirebaseDatabase in Frameworks */,
-				0917B942269F5453004EC81A /* Charts in Frameworks */,
 				0917B926269E4AC9004EC81A /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,7 +250,6 @@
 			isa = PBXGroup;
 			children = (
 				0917B93C269F4387004EC81A /* MeasureItemCardView.swift */,
-				0917B944269F54BD004EC81A /* LineView.swift */,
 			);
 			path = Items;
 			sourceTree = "<group>";
@@ -276,6 +275,7 @@
 		092FAB74284FBFE8007D95F4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0955F45D2C0F95B300FF637A /* Charts.framework */,
 				092FAB75284FBFE8007D95F4 /* WidgetKit.framework */,
 				092FAB77284FBFE8007D95F4 /* SwiftUI.framework */,
 			);
@@ -353,6 +353,7 @@
 		09E94ADB2855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension */ = {
 			isa = PBXGroup;
 			children = (
+				09847AA1286E54300034E719 /* wsanjustowatchos WatchKit Extension.entitlements */,
 				09E94ADC2855D1D000D7A8D7 /* MainView.swift */,
 				09E94AF32855D2A200D7A8D7 /* MainViewViewModel.swift */,
 				09E94ADE2855D1D000D7A8D7 /* wsanjusto_iosApp.swift */,
@@ -414,7 +415,6 @@
 			packageProductDependencies = (
 				0917B925269E4AC9004EC81A /* FirebaseAuth */,
 				0917B927269E4AC9004EC81A /* FirebaseDatabase */,
-				0917B941269F5453004EC81A /* Charts */,
 			);
 			productName = "wsanjusto-ios";
 			productReference = 09405CD5269E263800211DC6 /* wsanjusto-ios.app */;
@@ -488,7 +488,6 @@
 			mainGroup = 09405CCC269E263800211DC6;
 			packageReferences = (
 				0917B924269E4AC9004EC81A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				0917B940269F5453004EC81A /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			productRefGroup = 09405CD6269E263800211DC6 /* Products */;
 			projectDirPath = "";
@@ -571,7 +570,6 @@
 				096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */,
 				09405CEE269E2E1500211DC6 /* ChartView.swift in Sources */,
 				0917B921269E4928004EC81A /* AppDelegate.swift in Sources */,
-				0917B945269F54BD004EC81A /* LineView.swift in Sources */,
 				0917B916269E3368004EC81A /* AboutView.swift in Sources */,
 				096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */,
 				0917B930269ED8A1004EC81A /* AutenticationService.swift in Sources */,
@@ -631,7 +629,7 @@
 				INFOPLIST_FILE = wsanjustowidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -660,7 +658,7 @@
 				INFOPLIST_FILE = wsanjustowidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -727,7 +725,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -782,7 +780,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -804,7 +802,7 @@
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "wsanjusto-ios/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -829,7 +827,7 @@
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "wsanjusto-ios/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -849,6 +847,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
@@ -861,12 +860,13 @@
 				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp;
 				PRODUCT_NAME = "Tiempo San Justo de la Vega";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 8.0;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -877,6 +877,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
@@ -889,12 +890,13 @@
 				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp;
 				PRODUCT_NAME = "Tiempo San Justo de la Vega";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 8.0;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
@@ -903,6 +905,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = "wsanjustowatchos WatchKit Extension/wsanjustowatchos WatchKit Extension.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"wsanjustowatchos WatchKit Extension/Preview Content\"";
@@ -922,12 +926,13 @@
 				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 8.0;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -936,6 +941,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = "wsanjustowatchos WatchKit Extension/wsanjustowatchos WatchKit Extension.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"wsanjustowatchos WatchKit Extension/Preview Content\"";
@@ -955,12 +962,13 @@
 				MARKETING_VERSION = 1.4.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 8.0;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
@@ -1023,14 +1031,6 @@
 				minimumVersion = 8.3.1;
 			};
 		};
-		0917B940269F5453004EC81A /* XCRemoteSwiftPackageReference "Charts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/danielgindi/Charts.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1043,11 +1043,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0917B924269E4AC9004EC81A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseDatabase;
-		};
-		0917B941269F5453004EC81A /* Charts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0917B940269F5453004EC81A /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = Charts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
