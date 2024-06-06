@@ -33,6 +33,7 @@ struct ChartView: View {
     //                }
                 }
                 .chartXScale(range: .plotDimension(padding: 10))
+                .chartYScale(domain: ((viewModel.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2)...((viewModel.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2), range: .plotDimension(padding: 10))
                 .chartXAxis {
                     AxisMarks(preset: .extended, values: .automatic) { value in
                         AxisValueLabel(format: .dateTime.hour())
