@@ -40,7 +40,7 @@ struct ChartView: View {
                     }
                 }
                 .chartYAxis {
-                    AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 5))
+                    AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 2))
                 }
                 .padding()
             }
