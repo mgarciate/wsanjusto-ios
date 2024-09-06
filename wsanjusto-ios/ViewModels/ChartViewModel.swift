@@ -9,10 +9,15 @@ import Foundation
 import FirebaseDatabase
 
 class ChartViewModel: ObservableObject {
+    private static let defaultDate = "-"
+    private static let defaultTemperature = "- ºC"
     @Published var measures = [Measure]()
     @Published var isLoading = false
+    @Published var selectedDate: String = ChartViewModel.defaultDate
+    @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
     
     func fetchData() {
+        clear()
         isLoading = true
         let ref = Database.database().reference()
         ref.child("measures").queryOrdered(byChild: "orderByDate").queryLimited(toFirst: 150).observeSingleEvent(of: .value) { [weak self] snapshot in
@@ -20,13 +25,29 @@ class ChartViewModel: ObservableObject {
             print("*** Children \(snapshot.childrenCount)")
             #endif
             self?.isLoading = false
-            let measures: [Measure] = snapshot.children.compactMap { child in
+            self?.measures = snapshot.children.compactMap { child in
                 guard let measure = Measure.build(with: child as? DataSnapshot) else {
                     return nil
                 }
                 return measure
             }
-            self?.measures = measures.reversed()
+            // Append half of measures
+//            var resultArray: [Measure] = []
+//
+//            for i in stride(from: 0, to: measures.count, by: 2) {
+//                resultArray.append(measures[i])
+//            }
+//            self?.measures = resultArray
         }
+    }
+    
+    func select(measure: Measure) {
+        selectedDate = measure.dateString
+        selectedTemperature = String(format: "%.2f °C", measure.sensorTemperature1)
+    }
+    
+    func clear() {
+        selectedDate = ChartViewModel.defaultDate
+        selectedTemperature = ChartViewModel.defaultTemperature
     }
 }
