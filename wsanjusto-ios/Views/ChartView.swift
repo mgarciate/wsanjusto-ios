@@ -10,7 +10,25 @@ import Charts
 
 struct ChartView: View {
     @StateObject private var viewModel = ChartViewModel()
-    // TODO: Remove magic numbers
+    @State private var touchLocation: CGPoint? = nil
+    // TODO: Remove test values
+//    let measures: [Measure] = {
+//        var measures = [Measure]()
+//        (0..<20).forEach {
+//            let timestamp = 1718038095 + ($0 * 1000)
+//            var temp = 20.0
+//            var temp_factor = 0.0
+//            if $0 < (144/2) {
+//                temp =  Double($0) * 0.2
+//            } else {
+//                temp -= Double($0) * 0.2
+//            }
+//            measures.append(
+//                Measure(createdAt: timestamp, indexArduino: timestamp, orderByDate: -timestamp, realFeel: 19, sensorHumidity1: 80, sensorTemperature1: temp, sensorTemperature2: 21, pressure1: 1000, uid: timestamp)
+//            )
+//        }
+//        return measures
+//    }()
     
     var body: some View {
         ZStack {
@@ -20,36 +38,105 @@ struct ChartView: View {
                 Text("Cargando temperaturas...")
                     .foregroundColor(Color("PrimaryColor"))
             } else {
-                Chart(viewModel.measures) {
-                    LineMark(
-                        x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
-                        y: .value("Temperatura", $0.sensorTemperature1)
-                    )
-                    .interpolationMethod(.catmullRom)
-    //                .symbol {
-    //                    Circle()
-    //                        .fill(Color.green)
-    //                        .frame(width: 4, height: 4)
-    //                }
-                }
-                .chartXScale(range: .plotDimension(padding: 10))
-                .chartYScale(domain: ((viewModel.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2)...((viewModel.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2), range: .plotDimension(padding: 10))
-                .chartXAxis {
-                    AxisMarks(preset: .extended, values: .automatic) { value in
-                        AxisValueLabel(format: .dateTime.hour())
-                        AxisGridLine(centered: true)
+                VStack {
+                    Group {
+                            HStack {
+                                HStack(spacing: 5) {
+                                    Text("Hora:")
+                                        .font(.caption)
+                                    Text(viewModel.selectedDate)
+                                        .font(.caption)
+                                        .bold()
+                                }
+                                HStack(spacing: 5) {
+                                    Text("Temperatura:")
+                                        .font(.caption)
+                                    Text(viewModel.selectedTemperature)
+                                        .font(.caption)
+                                        .bold()
+                                }
+                                Spacer()
+                            }
+                            .padding()
                     }
-                }
-                .chartYAxis {
-                    AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 2))
-                }
+                    .frame(maxWidth: .infinity)
+                    .background(Color("White"))
+                    .cornerRadius(4.0)
+                    .padding()
+                    Chart(viewModel.measures) {
+                        LineMark(
+                            x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
+                            y: .value("Temperatura", $0.sensorTemperature1)
+                        )
+                        .interpolationMethod(.catmullRom)
+//                        .symbol {
+//                            Circle()
+//                                .fill(Color.green)
+//                                .frame(width: 4, height: 4)
+//                        }
+                    }
+                    .chartYScale(domain: ((viewModel.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2)...((viewModel.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2))
+                    .chartXAxis {
+                        AxisMarks(preset: .extended, values: .automatic) { value in
+                            AxisValueLabel(format: .dateTime.hour())
+                            AxisGridLine(centered: true)
+                        }
+                    }
+                    .chartYAxis {
+                        AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 2))
+                    }
+                    .chartOverlay { proxy in
+                        GeometryReader { geometry in
+                            ZStack {
+                                Rectangle().fill(.clear).contentShape(Rectangle())
+                                    .gesture(DragGesture()
+                                        .onChanged { value in
+                                            guard let measure = findClosestMeasure(to: value.location, proxy: proxy, geometry: geometry) else { return }
+                                            viewModel.select(measure: measure)
+                                        }
+                                    )
+                                    .onTapGesture { location in
+                                        guard let measure = findClosestMeasure(to: location, proxy: proxy, geometry: geometry) else { return }
+                                        viewModel.select(measure: measure)
+                                }
+                                if let touchLocation {
+                                    Path { path in
+                                        path.move(to: CGPoint(x: touchLocation.x, y: 0))
+                                        path.addLine(to: CGPoint(x: touchLocation.x, y: geometry.size.height))
+                                    }
+                                    .stroke(Color("RedDarkColor"), lineWidth: 1)
+                                    Path { path in
+                                        path.move(to: CGPoint(x: 0, y: touchLocation.y))
+                                        path.addLine(to: CGPoint(x: geometry.size.width, y: touchLocation.y))
+                                    }
+                                    .stroke(Color("RedDarkColor"), lineWidth: 1)
+                                }
+                            }
+                        }
+                    }
                 .padding()
+                }
             }
-            
         }
         .onAppear() {
             viewModel.fetchData()
+            touchLocation = nil
         }
+    }
+    
+    private func findClosestMeasure(to location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> Measure? {
+        guard !viewModel.measures.isEmpty,
+              location.x >= 0,
+              location.x < proxy.plotSize.width,
+              let firstTimestamp = viewModel.measures.last?.createdAt,
+              let lastTimestamp = viewModel.measures.first?.createdAt else { return nil }
+        let xScaleFactor = CGFloat(lastTimestamp - firstTimestamp) / proxy.plotSize.width
+        let touchedTimestamp = firstTimestamp + Int(location.x * xScaleFactor)
+        guard let measure = viewModel.measures.min(by: { abs($0.createdAt - touchedTimestamp) < abs($1.createdAt - touchedTimestamp) }) else { return nil }
+        let xLocation = proxy.plotSize.width * CGFloat(measure.createdAt - firstTimestamp) / CGFloat(lastTimestamp - firstTimestamp)
+        guard let yLocation = proxy.position(forY: measure.sensorTemperature1) else { return nil }
+        touchLocation = CGPoint(x: xLocation, y: yLocation)
+        return measure
     }
 }
 
