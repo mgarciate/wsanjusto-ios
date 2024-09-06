@@ -48,7 +48,8 @@ struct wsanjustowidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        MainMiniView(measure: .constant(entry.measure))
+        ZStack {}
+            .widgetBackground(MainMiniView(measure: .constant(entry.measure)))
     }
 }
 
@@ -70,5 +71,17 @@ struct wsanjustowidget_Previews: PreviewProvider {
     static var previews: some View {
         wsanjustowidgetEntryView(entry: SimpleEntry(date: Date(), measure: Measure.dummyData[0]))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
+    }
+}
+
+extension View {
+    func widgetBackground(_ backgroundView: some View) -> some View {
+        if #available(iOSApplicationExtension 17.0, *) {
+            return containerBackground(for: .widget) {
+                backgroundView
+            }
+        } else {
+            return background(backgroundView)
+        }
     }
 }
