@@ -15,6 +15,8 @@ class ChartViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var selectedDate: String = ChartViewModel.defaultDate
     @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
+    var domainMeasuresFrom: Double = 0.0
+    var domainMeasuresTo: Double = 0.0
     
     func fetchData() {
         clear()
@@ -31,6 +33,8 @@ class ChartViewModel: ObservableObject {
                 }
                 return measure
             }
+            self?.domainMeasuresFrom = (self?.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2
+            self?.domainMeasuresTo = (self?.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2
             // Append half of measures
 //            var resultArray: [Measure] = []
 //
