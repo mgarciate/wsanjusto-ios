@@ -66,16 +66,23 @@ struct ChartView: View {
                     Chart(viewModel.measures) {
                         LineMark(
                             x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
-                            y: .value("Temperatura", $0.sensorTemperature1)
+                            y: .value("Temperatura", $0.sensorTemperature1 / 15.2)
                         )
                         .interpolationMethod(.catmullRom)
+                        .foregroundStyle(by: .value("Value", "Temperature"))
+                        LineMark(
+                            x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
+                            y: .value("Humedad", $0.sensorHumidity1 / 96)
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(by: .value("Value", "Humidity"))
 //                        .symbol {
 //                            Circle()
 //                                .fill(Color.green)
 //                                .frame(width: 4, height: 4)
 //                        }
                     }
-                    .chartYScale(domain: ((viewModel.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2)...((viewModel.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2))
+//                    .chartYScale(domain: ((viewModel.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2)...((viewModel.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2))
                     .chartXAxis {
                         AxisMarks(preset: .extended, values: .automatic) { value in
                             AxisValueLabel(format: .dateTime.hour())
@@ -83,8 +90,35 @@ struct ChartView: View {
                         }
                     }
                     .chartYAxis {
-                        AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 2))
+//                        AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 2))
+                        let strideBy: Double = 6
+                        let defaultStride = Array(stride(from: 0, to: 1, by: 1.0 / strideBy))
+                        if let costMin = viewModel.measures.map({ $0.sensorTemperature1 }).min(), let costMax = viewModel.measures.map({ $0.sensorTemperature1 }).max() {
+                            let costsStride = Array(stride(from: costMin,
+                                                           through: costMax,
+                                                           by: (costMax - costMin) / strideBy))
+                            AxisMarks(position: .trailing, values: defaultStride) { axis in
+                                AxisGridLine()
+                                let value = costsStride[axis.index]
+                                AxisValueLabel("\(Int(value))", centered: false)
+                            }
+                        }
+//                        
+//                        if let consumptionMin = viewModel.measures.map({ $0.sensorHumidity1 }).min(), let consumptionMax = viewModel.measures.map({ $0.sensorHumidity1 }).max() {
+//                            let consumptionStride = Array(stride(from: consumptionMin,
+//                                                                 through: consumptionMax,
+//                                                                 by: (consumptionMax - consumptionMin) / strideBy))
+//                            AxisMarks(position: .leading, values: defaultStride) { axis in
+//                                AxisGridLine()
+//                                let value = consumptionStride[axis.index]
+//                                AxisValueLabel("\(Int(value))%", centered: false)
+//                            }
+//                        }
                     }
+                    .chartForegroundStyleScale ([
+                        "Temperature": .green,
+                        "Humidity": .blue,
+                    ])
                     .chartOverlay { proxy in
                         GeometryReader { geometry in
                             ZStack {
@@ -134,7 +168,7 @@ struct ChartView: View {
         let touchedTimestamp = firstTimestamp + Int(location.x * xScaleFactor)
         guard let measure = viewModel.measures.min(by: { abs($0.createdAt - touchedTimestamp) < abs($1.createdAt - touchedTimestamp) }) else { return nil }
         let xLocation = proxy.plotSize.width * CGFloat(measure.createdAt - firstTimestamp) / CGFloat(lastTimestamp - firstTimestamp)
-        guard let yLocation = proxy.position(forY: measure.sensorTemperature1) else { return nil }
+        guard let yLocation = proxy.position(forY: measure.sensorTemperature1 / 15.2) else { return nil }
         touchLocation = CGPoint(x: xLocation, y: yLocation)
         return measure
     }
