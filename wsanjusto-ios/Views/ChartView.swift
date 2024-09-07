@@ -68,6 +68,14 @@ struct ChartView: View {
                             x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
                             y: .value("Temperatura", $0.sensorTemperature1)
                         )
+                        .foregroundStyle(Color("Green").gradient)
+                        .interpolationMethod(.catmullRom)
+                        AreaMark(
+                            x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
+                            yStart: .value("Temperatura", $0.sensorTemperature1),
+                            yEnd: .value("TemperaturaEnd", viewModel.domainMeasuresFrom)
+                        )
+                        .foregroundStyle(Color("Green").opacity(0.1).gradient)
                         .interpolationMethod(.catmullRom)
 //                        .symbol {
 //                            Circle()
@@ -75,7 +83,7 @@ struct ChartView: View {
 //                                .frame(width: 4, height: 4)
 //                        }
                     }
-                    .chartYScale(domain: ((viewModel.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2)...((viewModel.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2))
+                    .chartYScale(domain: viewModel.domainMeasuresFrom...viewModel.domainMeasuresTo)
                     .chartXAxis {
                         AxisMarks(preset: .extended, values: .automatic) { value in
                             AxisValueLabel(format: .dateTime.hour())
@@ -110,6 +118,10 @@ struct ChartView: View {
                                         path.addLine(to: CGPoint(x: geometry.size.width, y: touchLocation.y))
                                     }
                                     .stroke(Color("RedDarkColor"), lineWidth: 1)
+                                    Circle()
+                                        .foregroundStyle(Color("RedDarkColor"))
+                                        .frame(width: 5, height: 5)
+                                        .position(touchLocation)
                                 }
                             }
                         }
