@@ -629,7 +629,7 @@
 				INFOPLIST_FILE = wsanjustowidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -658,7 +658,7 @@
 				INFOPLIST_FILE = wsanjustowidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -802,7 +802,7 @@
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "wsanjusto-ios/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -827,7 +827,7 @@
 				DEVELOPMENT_TEAM = M3XA3ETRDV;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "wsanjusto-ios/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

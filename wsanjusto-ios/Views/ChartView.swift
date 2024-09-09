@@ -137,15 +137,21 @@ struct ChartView: View {
     }
     
     private func findClosestMeasure(to location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> Measure? {
+        let plotSizeWidth: CGFloat
+        if #available(iOS 17.0, *) {
+            plotSizeWidth = proxy.plotSize.width
+        } else {
+            plotSizeWidth = geometry[proxy.plotAreaFrame].width
+        }
         guard !viewModel.measures.isEmpty,
               location.x >= 0,
-              location.x < proxy.plotSize.width,
+              location.x < plotSizeWidth,
               let firstTimestamp = viewModel.measures.last?.createdAt,
               let lastTimestamp = viewModel.measures.first?.createdAt else { return nil }
-        let xScaleFactor = CGFloat(lastTimestamp - firstTimestamp) / proxy.plotSize.width
+        let xScaleFactor = CGFloat(lastTimestamp - firstTimestamp) / plotSizeWidth
         let touchedTimestamp = firstTimestamp + Int(location.x * xScaleFactor)
         guard let measure = viewModel.measures.min(by: { abs($0.createdAt - touchedTimestamp) < abs($1.createdAt - touchedTimestamp) }) else { return nil }
-        let xLocation = proxy.plotSize.width * CGFloat(measure.createdAt - firstTimestamp) / CGFloat(lastTimestamp - firstTimestamp)
+        let xLocation = plotSizeWidth * CGFloat(measure.createdAt - firstTimestamp) / CGFloat(lastTimestamp - firstTimestamp)
         guard let yLocation = proxy.position(forY: measure.sensorTemperature1) else { return nil }
         touchLocation = CGPoint(x: xLocation, y: yLocation)
         return measure
