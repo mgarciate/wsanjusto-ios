@@ -29,6 +29,7 @@ struct ChartView: View {
 //        }
 //        return measures
 //    }()
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         ZStack {
@@ -133,6 +134,12 @@ struct ChartView: View {
         .onAppear() {
             viewModel.fetchData()
             touchLocation = nil
+        }
+        .onChange(of: scenePhase) { newPhase in
+            if newPhase == .active {
+                viewModel.fetchData()
+                touchLocation = nil
+            }
         }
     }
     
