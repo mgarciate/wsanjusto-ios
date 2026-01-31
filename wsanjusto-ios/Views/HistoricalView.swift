@@ -17,12 +17,13 @@ struct HistoricalView: View {
                 .edgesIgnoringSafeArea(.all)
             
             ScrollView {
-                LazyVStack {
+                LazyVStack(spacing: 12) {
                     ForEach(viewModel.measures) { item in
                         MeasureItemCardView(measure: item)
                     }
                 }
                 .padding(.horizontal, 10)
+                .padding(.vertical, 10)
             }
         }
         .onAppear() {

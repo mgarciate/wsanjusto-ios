@@ -10,25 +10,35 @@ import WidgetKit
 
 class DashboardViewModel: ObservableObject {
     @Published var measure = Measure.dummyData[0]
+    @Published var forecast: [ForecastDay] = []
     @Published var progressTempValue = 0.0
     @Published var progressHumValue = 0.0
     private var isRefreshing = false
     
     func fetchData() {
         let ref = Database.database().reference()
-        ref.child("measures").queryOrdered(byChild: "orderByDate").queryLimited(toFirst: 1).observe(.value) { [weak self] snapshot in
-            snapshot.children.forEach { child in
-                guard let currentData = Measure.build(with: child as? DataSnapshot) else {
-                    return
-                }
-                #if DEBUG
-                print("*** CURRENT DATA \(currentData)")
-                #endif
-                self?.update(measure: currentData)
-                WidgetCenter.shared.reloadAllTimelines()
-                // Only want the 1st value
+        
+        // Fetch dashboard data (includes current measure + forecast)
+        ref.child("dashboard").observe(.value) { [weak self] snapshot in
+            guard let dashboardData = DashboardData.build(with: snapshot) else {
                 return
             }
+            
+            #if DEBUG
+            print("*** DASHBOARD DATA \(dashboardData)")
+            #endif
+            
+            // Update current measurement
+            if let current = dashboardData.current {
+                self?.update(measure: current)
+            }
+            
+            // Update forecast
+            if let forecast = dashboardData.forecast {
+                self?.forecast = forecast.toDays()
+            }
+            
+            WidgetCenter.shared.reloadAllTimelines()
         }
     }
     
@@ -38,10 +48,14 @@ class DashboardViewModel: ObservableObject {
         progressTempValue = 0
         progressHumValue = 0
         let previousMeasure = measure
+        let previousForecast = forecast
         measure = Measure.dummyData[0]
+        forecast = []
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
             self.update(measure: previousMeasure)
+            self.forecast = previousForecast
             self.isRefreshing = false
         }
     }
