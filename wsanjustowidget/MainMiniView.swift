@@ -35,11 +35,23 @@ struct MainMiniView: View {
                 .padding(.leading, 10)
                 VStack(alignment: .leading) {
                     HStack(spacing: 5) {
-                        Image(systemName: "humidity")
-                        Text("\(measure.sensorHumidity1, specifier: "%.0f")%")
+                        Text("Sens. térmica:")
+                        Text(String(format: "%.1f°C", measure.realFeel))
+                            .fontWeight(.bold)
                         Spacer()
                     }
-                    Text(String(format: "%.0f hPa", measure.pressure1))
+                    HStack(spacing: 5) {
+                        Text("Total precip.:")
+                        Text(String(format: "%.2f mm", measure.precipTotal ?? 0))
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
+                    HStack(spacing: 5) {
+                        Text("Villameca:")
+                        Text(String(format: "%.2f hm³", measure.villamecaActual ?? 0))
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
                 }
                 .font(.caption)
                 .padding(.leading, 10)
@@ -58,9 +70,33 @@ struct MainMiniView: View {
     }
 }
 
+#if DEBUG
 struct MainMiniView_Previews: PreviewProvider {
     static var previews: some View {
-        MainMiniView(measure: .constant(Measure.dummyData[0]))
-            .previewLayout(.fixed(width: 200, height: 200))
+        MainMiniView(measure: .constant(Measure(
+            createdAt: Int(Date().timeIntervalSince1970),
+            indexArduino: 0,
+            orderByDate: 0,
+            realFeel: 20.0,
+            sensorHumidity1: 65.0,
+            sensorTemperature1: 22.5,
+            sensorTemperature2: 21.0,
+            pressure1: 1013.25,
+            uid: 1,
+            dewpoint: 15.0,
+            precipTotal: 2.5,
+            uv: 3.0,
+            windSpeed: 10.0,
+            windGust: 15.0,
+            windDir: 180,
+            airQualityIndex: 50,
+            airQualityCategory: "Buena",
+            villamecaActual: 13.3,
+            villamecaWeeklyVolumeVariation: 0.5,
+            villamecaLastYear: 12.8
+        )))
+        .previewLayout(.fixed(width: 200, height: 200))
+        .previewDisplayName("Widget Small")
     }
 }
+#endif
