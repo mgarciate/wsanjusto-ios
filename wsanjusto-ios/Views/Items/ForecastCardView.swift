@@ -32,7 +32,7 @@ struct ForecastCardView: View {
             HStack(spacing: 2) {
                 Image(systemName: "drop.fill")
                     .foregroundColor(.white.opacity(rainAlpha))
-                Text(String(format: "%.1f mm", forecast.precipitation))
+                Text(String(format: "%.2f mm", forecast.precipitation))
                     .foregroundColor(.white.opacity(rainAlpha))
             }
             .font(.caption)
@@ -42,7 +42,7 @@ struct ForecastCardView: View {
                 HStack(spacing: 2) {
                     Image(systemName: "snowflake")
                         .foregroundColor(.white.opacity(snowAlpha))
-                    Text(String(format: "%.1f cm", qpfSnow))
+                    Text(String(format: "%.2f cm", qpfSnow))
                         .foregroundColor(.white.opacity(snowAlpha))
                 }
                 .font(.caption)

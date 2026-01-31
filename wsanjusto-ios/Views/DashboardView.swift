@@ -86,7 +86,7 @@ struct DashboardView: View {
                         WeatherMetricView(
                             icon: "cloud.rain.fill",
                             label: "Total\nprecipitación",
-                            value: String(format: "%.1f mm", viewModel.measure.precipTotal ?? 0)
+                            value: String(format: "%.2f mm", viewModel.measure.precipTotal ?? 0)
                         )
                         
                         WeatherMetricView(
@@ -105,8 +105,8 @@ struct DashboardView: View {
                         WeatherMetricView(
                             icon: "location.north.fill",
                             label: "Viento (km/h)",
-                            value: String(format: "%.0f | %.0f", 
-                                        viewModel.measure.windSpeed ?? 0, 
+                            value: String(format: "%.1f | %.1f", 
+                                        viewModel.measure.windSpeed ?? 0,
                                         viewModel.measure.windGust ?? 0),
                             rotation: Double(viewModel.measure.windDir ?? 0)
                         )

@@ -40,7 +40,7 @@ struct MeasureItemCardView: View {
                 }
                 
                 if let precipTotal = measure.precipTotal {
-                    DataRow(label: "Precip. total:", value: String(format: "%.1f mm", precipTotal))
+                    DataRow(label: "Precip. total:", value: String(format: "%.2f mm", precipTotal))
                 }
                 
                 DataRow(label: "Presión:", value: String(format: "%.0f hPa", measure.pressure1))
@@ -50,7 +50,7 @@ struct MeasureItemCardView: View {
                 }
                 
                 if let windSpeed = measure.windSpeed, let windGust = measure.windGust {
-                    DataRow(label: "Viento:", value: String(format: "%.0f | %.0f km/h", windSpeed, windGust))
+                    DataRow(label: "Viento:", value: String(format: "%.1f | %.1f km/h", windSpeed, windGust))
                 }
                 
                 if let airQualityIndex = measure.airQualityIndex, 
