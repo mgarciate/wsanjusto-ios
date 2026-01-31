@@ -59,14 +59,11 @@ struct ReservoirView: View {
                 VStack {
                     Text(String(format: "%.1f hm³", maxCapacity))
                         .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
                     Spacer()
                     Text("0 hm³")
                         .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
                 }
+                .foregroundColor(.white)
                 
                 // Gauge
                 ZStack(alignment: .bottom) {
@@ -79,19 +76,21 @@ struct ReservoirView: View {
                     GeometryReader { geometry in
                         VStack {
                             Spacer()
-                            Rectangle()
-                                .fill(Color.white.opacity(0.3))
-                                .frame(height: geometry.size.height * CGFloat(fillPercentage / 100))
+                            ZStack {
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.3))
+                                    .frame(height: geometry.size.height * CGFloat(fillPercentage / 100))
+                                
+                                // Percentage text centered in filled area
+                                Text(String(format: "%.0f%%", fillPercentage))
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.white)
+                            }
                         }
                     }
                     .frame(width: 96, height: 196)
                     .clipShape(RoundedRectangle(cornerRadius: 2))
-                    
-                    // Percentage text
-                    Text(String(format: "%.0f%%", fillPercentage))
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
                 }
                 .frame(width: 100, height: 200)
                 
