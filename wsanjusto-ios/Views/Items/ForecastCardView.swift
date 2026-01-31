@@ -21,7 +21,7 @@ struct ForecastCardView: View {
                 .font(.caption2)
                 .foregroundColor(.white.opacity(0.8))
             
-            Image(systemName: weatherIcon)
+            Image(weatherIconAsset)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 40, height: 40)
@@ -69,37 +69,15 @@ struct ForecastCardView: View {
         return qpfSnow > 0.0 ? 0.7 : 0.3
     }
     
-    private var weatherIcon: String {
-        // Map iconCode to SF Symbols
-        // Based on Weather.com icon codes
+    private var weatherIconAsset: String {
+        // Map iconCode to SVG weather assets
+        // Use weather_icon_{code} format
         guard let code = forecast.iconCode else {
-            return forecast.precipitation > 0.5 ? "cloud.rain.fill" : "cloud.fill"
+            return "weather_icon_0"
         }
         
-        switch code {
-        case 1, 2, 3, 4: // Sunny variations
-            return "sun.max.fill"
-        case 5, 6, 7, 8: // Partly cloudy
-            return "cloud.sun.fill"
-        case 9, 10, 11: // Cloudy
-            return "cloud.fill"
-        case 12, 13, 14, 15, 16, 17, 18: // Rain variations
-            return "cloud.rain.fill"
-        case 19, 20, 21, 22: // Snow variations
-            return "cloud.snow.fill"
-        case 23, 24: // Windy
-            return "wind"
-        case 29, 30: // Partly cloudy night
-            return "cloud.moon.fill"
-        case 31, 32, 33: // Clear night
-            return "moon.fill"
-        case 39, 40, 41, 42: // Rain showers
-            return "cloud.drizzle.fill"
-        case 43, 44, 45, 46: // Snow showers
-            return "cloud.snow.fill"
-        default:
-            return "cloud.fill"
-        }
+        // Return corresponding weather icon asset
+        return "weather_icon_\(code)"
     }
 }
 
