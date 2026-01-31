@@ -34,6 +34,11 @@
 		096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0926A04246009128C5 /* DashboardViewModel.swift */; };
 		096A5A0D26A04275009128C5 /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0C26A04275009128C5 /* ChartViewModel.swift */; };
 		096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */; };
+		0973F1EB2F2D20F6002CCC70 /* WeatherMetricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0973F1EA2F2D20F6002CCC70 /* WeatherMetricView.swift */; };
+		0973F1EC2F2D20F6002CCC70 /* ForecastCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0973F1E92F2D20F6002CCC70 /* ForecastCardView.swift */; };
+		0973F1EF2F2D2119002CCC70 /* Forecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0973F1EE2F2D2119002CCC70 /* Forecast.swift */; };
+		0973F1F02F2D2119002CCC70 /* DashboardData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0973F1ED2F2D2119002CCC70 /* DashboardData.swift */; };
+		0973F1F22F2D271C002CCC70 /* ReservoirView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0973F1F12F2D271C002CCC70 /* ReservoirView.swift */; };
 		09847A91286DBAA30034E719 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09405CDC269E263A00211DC6 /* Assets.xcassets */; };
 		09847A93286DC3660034E719 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A92286DC3660034E719 /* FlagView.swift */; };
 		09847A94286DC3660034E719 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09847A92286DC3660034E719 /* FlagView.swift */; };
@@ -147,6 +152,11 @@
 		096A5A0926A04246009128C5 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		096A5A0C26A04275009128C5 /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
 		096A5A0F26A0428F009128C5 /* HistoricalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalViewModel.swift; sourceTree = "<group>"; };
+		0973F1E92F2D20F6002CCC70 /* ForecastCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastCardView.swift; sourceTree = "<group>"; };
+		0973F1EA2F2D20F6002CCC70 /* WeatherMetricView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherMetricView.swift; sourceTree = "<group>"; };
+		0973F1ED2F2D2119002CCC70 /* DashboardData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardData.swift; sourceTree = "<group>"; };
+		0973F1EE2F2D2119002CCC70 /* Forecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Forecast.swift; sourceTree = "<group>"; };
+		0973F1F12F2D271C002CCC70 /* ReservoirView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReservoirView.swift; sourceTree = "<group>"; };
 		09847A92286DC3660034E719 /* FlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagView.swift; sourceTree = "<group>"; };
 		09847A96286DC7B40034E719 /* MainMiniView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMiniView.swift; sourceTree = "<group>"; };
 		09847AA1286E54300034E719 /* wsanjustowatchos WatchKit Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "wsanjustowatchos WatchKit Extension.entitlements"; sourceTree = "<group>"; };
@@ -214,6 +224,8 @@
 			isa = PBXGroup;
 			children = (
 				0917B933269EDA9E004EC81A /* Measure.swift */,
+				0973F1ED2F2D2119002CCC70 /* DashboardData.swift */,
+				0973F1EE2F2D2119002CCC70 /* Forecast.swift */,
 				0917B937269F3FC1004EC81A /* Measure+Database.swift */,
 			);
 			path = Models;
@@ -250,6 +262,9 @@
 			isa = PBXGroup;
 			children = (
 				0917B93C269F4387004EC81A /* MeasureItemCardView.swift */,
+				0973F1E92F2D20F6002CCC70 /* ForecastCardView.swift */,
+				0973F1F12F2D271C002CCC70 /* ReservoirView.swift */,
+				0973F1EA2F2D20F6002CCC70 /* WeatherMetricView.swift */,
 			);
 			path = Items;
 			sourceTree = "<group>";
@@ -568,12 +583,17 @@
 				0917B934269EDA9E004EC81A /* Measure.swift in Sources */,
 				09405CD9269E263800211DC6 /* wsanjusto_iosApp.swift in Sources */,
 				096A5A0A26A04246009128C5 /* DashboardViewModel.swift in Sources */,
+				0973F1EF2F2D2119002CCC70 /* Forecast.swift in Sources */,
+				0973F1F02F2D2119002CCC70 /* DashboardData.swift in Sources */,
 				09405CEE269E2E1500211DC6 /* ChartView.swift in Sources */,
 				0917B921269E4928004EC81A /* AppDelegate.swift in Sources */,
 				0917B916269E3368004EC81A /* AboutView.swift in Sources */,
 				096A5A1026A0428F009128C5 /* HistoricalViewModel.swift in Sources */,
+				0973F1F22F2D271C002CCC70 /* ReservoirView.swift in Sources */,
 				0917B930269ED8A1004EC81A /* AutenticationService.swift in Sources */,
 				0917B913269E3350004EC81A /* HistoricalView.swift in Sources */,
+				0973F1EB2F2D20F6002CCC70 /* WeatherMetricView.swift in Sources */,
+				0973F1EC2F2D20F6002CCC70 /* ForecastCardView.swift in Sources */,
 				096A5A0D26A04275009128C5 /* ChartViewModel.swift in Sources */,
 				0917B94A269F5A17004EC81A /* Resources.swift in Sources */,
 				0917B95626A01A34004EC81A /* SplashView.swift in Sources */,
@@ -635,7 +655,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.wsanjustowidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -664,7 +684,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.wsanjustowidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -807,7 +827,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -832,7 +852,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -857,7 +877,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.mgarciate.wsanjusto;
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp;
 				PRODUCT_NAME = "Tiempo San Justo de la Vega";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -887,7 +907,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Tiempo San Justo de la Vega";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.mgarciate.wsanjusto;
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp;
 				PRODUCT_NAME = "Tiempo San Justo de la Vega";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -923,7 +943,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -959,7 +979,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.1;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgarciate.wsanjusto.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";

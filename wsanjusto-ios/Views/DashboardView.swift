@@ -11,160 +11,161 @@ struct DashboardView: View {
     @ObservedObject var viewModel = DashboardViewModel()
     @ObservedObject var authService = AuthenticationService()
     
+    private let skyBlue = Color(red: 0.53, green: 0.81, blue: 0.92)
+    private let steelBlue = Color(red: 0.27, green: 0.51, blue: 0.71)
+    
     var body: some View {
         ZStack {
-            Color.white
-                .edgesIgnoringSafeArea(.all)
+            // Blue gradient background
+            LinearGradient(
+                colors: [skyBlue, steelBlue],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .edgesIgnoringSafeArea(.all)
             
-            VStack {
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        viewModel.refreshData()
-                    }, label: {
-                        Image(systemName: "arrow.clockwise")
-                            .resizable()
-                            .scaledToFit()
-                            .padding(10)
-                            .frame(width: 50, height: 50)
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header with location and refresh button
+                    HStack {
+                        Spacer()
+                        Text("San Justo de la Vega")
+                            .font(.title2)
+                            .fontWeight(.medium)
                             .foregroundColor(.white)
-                            .background(Color("PrimaryColor"))
-                            .cornerRadius(25)
-                    })
-                    .padding()
+                        Spacer()
+                    }
+                    .overlay(
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                viewModel.refreshData()
+                            }, label: {
+                                Image(systemName: "arrow.clockwise")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundColor(.white)
+                                    .padding(12)
+                            })
+                        }
+                    )
+                    .padding(.horizontal)
+                    
+                    // Large temperature display
+                    Text(String(format: "%.1fº", viewModel.measure.sensorTemperature1))
+                        .font(.system(size: 80))
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                    .padding(.top, 10)
+                    
+                    // Weather metrics grid (3x3)
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 16) {
+                        WeatherMetricView(
+                            icon: "thermometer",
+                            label: "Sensación\ntérmica",
+                            value: String(format: "%.1f °C", viewModel.measure.realFeel)
+                        )
+                        
+                        WeatherMetricView(
+                            icon: "drop.fill",
+                            label: "Punto de\nrocío",
+                            value: String(format: "%.1f °C", viewModel.measure.dewpoint ?? 0)
+                        )
+                        
+                        WeatherMetricView(
+                            icon: "humidity.fill",
+                            label: "Humedad",
+                            value: String(format: "%.0f %%", viewModel.measure.sensorHumidity1)
+                        )
+                        
+                        WeatherMetricView(
+                            icon: "cloud.rain.fill",
+                            label: "Total\nprecipitación",
+                            value: String(format: "%.2f mm", viewModel.measure.precipTotal ?? 0)
+                        )
+                        
+                        WeatherMetricView(
+                            icon: "gauge",
+                            label: "Presión\natmosférica",
+                            value: String(format: "%.0f", viewModel.measure.pressure1)
+                        )
+                        
+                        WeatherMetricView(
+                            icon: "sun.max.fill",
+                            label: "UV",
+                            value: String(format: "%.1f", viewModel.measure.uv ?? 0)
+                        )
+                        
+                        // Wind speed and gust with direction
+                        WeatherMetricView(
+                            icon: "location.north.fill",
+                            label: "Viento (km/h)",
+                            value: String(format: "%.1f | %.1f", 
+                                        viewModel.measure.windSpeed ?? 0,
+                                        viewModel.measure.windGust ?? 0),
+                            rotation: Double(viewModel.measure.windDir ?? 0)
+                        )
+                        
+                        // Air quality
+                        WeatherMetricView(
+                            icon: "aqi.medium",
+                            label: viewModel.measure.airQualityCategory ?? "CO₂",
+                            value: String(format: "%.0f", Double(viewModel.measure.airQualityIndex ?? 0))
+                        )
+                    }
+                    .padding(.horizontal)
+                    
+                    // Forecast section
+                    if !viewModel.forecast.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("PREVISIÓN PRÓXIMOS DÍAS")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white.opacity(0.9))
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(viewModel.forecast) { day in
+                                        ForecastCardView(forecast: day)
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                        .padding(.top, 10)
+                    }
+                    
+                    // Reservoir section
+                    if viewModel.measure.villamecaActual != nil {
+                        ReservoirView(measure: viewModel.measure)
+                            .padding(.horizontal)
+                            .padding(.top, 10)
+                    }
+                    
+                    // Last update timestamp
+                    VStack(spacing: 4) {
+                        Text("Últ. actualización")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                        Text(viewModel.measure.lastUpdateString)
+                            .font(.caption.bold())
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    .padding(.top, 10)
+                    .padding(.bottom, 20)
                 }
-                Spacer()
-            }
-            
-            VStack {
-                VStack {
-                    Spacer()
-                    ProgressBar(measure: $viewModel.measure, progress: $viewModel.progressTempValue, type: .temperature)
-                        .frame(width: 250.0, height: 250.0)
-                        .padding(10.0)
-                    Spacer()
-                        .frame(height: 20)
-                    ProgressBar(measure: $viewModel.measure, progress: $viewModel.progressHumValue, type: .humidity)
-                        .frame(width: 150.0, height: 150.0)
-                        .padding(10.0)
-                    Spacer()
-                }
-                Spacer()
-                DashboardFooterView(measure: $viewModel.measure)
-                    .padding(10)
+                .padding(.top)
             }
         }
         .onReceive(authService.$user) { user in
             guard let _ = user else { return }
             viewModel.fetchData()
-        }
-    }
-}
-
-fileprivate struct DashboardFooterView: View {
-    @Binding var measure: Measure
-    
-    var body: some View {
-        VStack {
-            Color("PrimaryColor")
-                .frame(height: 1)
-            VStack(spacing: 5) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .trailing) {
-                        HStack {
-                            Text("Presión atmosférica:")
-                            Spacer()
-                            Text(String(format: "%.0f hPa", measure.pressure1))
-                                .bold()
-                        }
-                        HStack {
-                            Text("Sensación térmica:")
-                            Spacer()
-                            Text(String(format: "%.2f °C", measure.realFeel))
-                                .bold()
-                        }
-                        HStack {
-                            Text("Segundo sensor:")
-                            Spacer()
-                            Text(String(format: "%.2f °C", measure.sensorTemperature2))
-                                .bold()
-                        }
-                    }
-                    .frame(maxWidth: 180)
-                    Spacer()
-                    VStack(alignment: .trailing) {
-                        Text("Últ. actualización:")
-                        Text(measure.dateString)
-                            .bold()
-                    }
-                }
-                Text("*Los datos se actualizan cada 10 minutos aproximadamente...")
-                    .foregroundColor(Color("TextGrayColor"))
-                    .italic()
-                    .lineLimit(1)
-            }
-            .foregroundColor(Color("TextBlackColor"))
-            .font(.caption)
-        }
-    }
-}
-
-fileprivate enum ProgressBarType {
-    case temperature, humidity
-}
-
-fileprivate struct ProgressBar: View {
-    @Binding var measure: Measure
-    @Binding var progress: Double
-    let type: ProgressBarType
-    private let gradientHot = AngularGradient(
-        gradient: Gradient(colors: [ Color("RedDarkColor"), Color("RedLightColor"),.white]),
-        center: .center,
-        startAngle: .degrees(270),
-        endAngle: .degrees(0))
-    private let gradientCold = AngularGradient(
-        gradient: Gradient(colors: [.white, Color("BlueLightColor"), Color("BlueDarkColor")]),
-        center: .center,
-        startAngle: .degrees(0),
-        endAngle: .degrees(90))
-    
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(lineWidth: 20.0)
-                .foregroundColor(Color("PrimaryColor"))
-            
-            if progress >= 0 {
-                Circle()
-                    .trim(from: 0.0, to: CGFloat(progress))
-                    .stroke(gradientHot, style: StrokeStyle(lineWidth: 20.0, lineCap: .round, lineJoin: .round))
-                    .rotationEffect(Angle(degrees: 270.0))
-                    .animation(.linear(duration: 1.0))
-                //                .rotation3DEffect(.degrees(180), axis: (x: 1, y: 0, z: 0))
-            } else {
-                Circle()
-                    .trim(from: 0.0, to: CGFloat(abs(progress)))
-                    .stroke(gradientCold, style: StrokeStyle(lineWidth: 20.0, lineCap: .round, lineJoin: .round))
-                    .rotationEffect(Angle(degrees: 270.0))
-                    .animation(.linear(duration: 1.0))
-                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-            }
-
-            VStack(alignment: .center, spacing: -10) {
-                if type == .temperature {
-                    Text(String(format: "%.1f", measure.sensorTemperature1))
-                        .font(.system(size: 60))
-                        .bold()
-                } else if type == .humidity {
-                    Text(String(format: "%.0f", measure.sensorHumidity1))
-                        .font(.system(size: 60))
-                        .bold()
-                }
-                Text("\(type == .temperature ? "°C" : "%")")
-                    .font(.title)
-                    .bold()
-            }
-            .foregroundColor(Color("PrimaryColor"))
         }
     }
 }

@@ -23,6 +23,41 @@ extension Measure {
               let uid = value["uid"] as? Int else {
             return nil
         }
-        return Measure(createdAt: createdAt, indexArduino: indexArduino, orderByDate: orderByDate, realFeel: realFeel, sensorHumidity1: min(sensorHumidity1, 99), sensorTemperature1: sensorTemperature1, sensorTemperature2: sensorTemperature2, pressure1: pressure1, uid: uid)
+        
+        // Extract optional fields
+        let dewpoint = value["dewpoint"] as? Double
+        let precipTotal = value["precipTotal"] as? Double
+        let uv = value["uv"] as? Double
+        let windSpeed = value["windSpeed"] as? Double
+        let windGust = value["windGust"] as? Double
+        let windDir = value["winddir"] as? Int
+        let airQualityIndex = value["airQualityIndex"] as? Int
+        let airQualityCategory = value["airQualityCategory"] as? String
+        let villamecaActual = value["villamecaActual"] as? Double
+        let villamecaWeeklyVolumeVariation = value["villamecaWeeklyVolumeVariation"] as? Double
+        let villamecaLastYear = value["villamecaLastYear"] as? Double
+        
+        return Measure(
+            createdAt: createdAt,
+            indexArduino: indexArduino,
+            orderByDate: orderByDate,
+            realFeel: realFeel,
+            sensorHumidity1: min(sensorHumidity1, 99),
+            sensorTemperature1: sensorTemperature1,
+            sensorTemperature2: sensorTemperature2,
+            pressure1: pressure1,
+            uid: uid,
+            dewpoint: dewpoint,
+            precipTotal: precipTotal,
+            uv: uv,
+            windSpeed: windSpeed,
+            windGust: windGust,
+            windDir: windDir,
+            airQualityIndex: airQualityIndex,
+            airQualityCategory: airQualityCategory,
+            villamecaActual: villamecaActual,
+            villamecaWeeklyVolumeVariation: villamecaWeeklyVolumeVariation,
+            villamecaLastYear: villamecaLastYear
+        )
     }
 }
