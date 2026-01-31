@@ -33,15 +33,8 @@ extension ForecastDay {
     var dayName: String {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "es_ES")
-        dateFormatter.dateFormat = "EEE"
+        dateFormatter.dateFormat = "EEE dd/MM"
         return dateFormatter.string(from: date).capitalized
-    }
-    
-    var shortDate: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "es_ES")
-        dateFormatter.dateFormat = "dd/MM"
-        return dateFormatter.string(from: date)
     }
 }
 
@@ -120,11 +113,6 @@ struct Forecast: Codable {
             
             // Move to next day
             forecastDate = calendar.date(byAdding: .day, value: 1, to: forecastDate) ?? forecastDate
-            
-            // Limit to 5 days
-            if days.count >= 5 {
-                break
-            }
         }
         
         return days

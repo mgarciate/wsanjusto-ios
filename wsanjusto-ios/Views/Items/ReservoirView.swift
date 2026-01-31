@@ -45,8 +45,7 @@ struct ReservoirView: View {
             // Header
             VStack(spacing: 4) {
                 Text("RESERVA ACTUAL")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(.caption.bold())
                     .foregroundColor(.white.opacity(0.9))
                 
                 Text("Embalse de Villameca")
@@ -59,10 +58,14 @@ struct ReservoirView: View {
                 // Left value - Max capacity
                 VStack {
                     Text(String(format: "%.1f hm³", maxCapacity))
-                        .font(.body)
+                        .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                     Spacer()
+                    Text("0 hm³")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
                 }
                 
                 // Gauge
@@ -99,25 +102,17 @@ struct ReservoirView: View {
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
+                    Spacer()
                 }
             }
             .padding(.vertical, 8)
-            
-            // Bottom label
-            HStack {
-                Spacer()
-                Text("0 hm³")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.7))
-                Spacer()
-            }
             
             // Comparisons
             HStack(spacing: 1) {
                 // Weekly comparison
                 VStack(spacing: 8) {
                     Text("Respecto a la\nsemana anterior")
-                        .font(.caption2)
+                        .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
@@ -148,7 +143,7 @@ struct ReservoirView: View {
                 // Last year comparison
                 VStack(spacing: 8) {
                     Text("Misma semana del\naño anterior")
-                        .font(.caption2)
+                        .font(.caption)
                         .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .lineLimit(2)

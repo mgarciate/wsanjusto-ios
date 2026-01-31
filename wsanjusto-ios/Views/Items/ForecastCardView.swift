@@ -17,10 +17,6 @@ struct ForecastCardView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
             
-            Text(forecast.shortDate)
-                .font(.caption2)
-                .foregroundColor(.white.opacity(0.8))
-            
             Image(weatherIconAsset)
                 .resizable()
                 .scaledToFit()
@@ -35,23 +31,21 @@ struct ForecastCardView: View {
             // Rain precipitation
             HStack(spacing: 2) {
                 Image(systemName: "drop.fill")
-                    .font(.caption2)
                     .foregroundColor(.white.opacity(rainAlpha))
                 Text(String(format: "%.1f mm", forecast.precipitation))
-                    .font(.caption2)
                     .foregroundColor(.white.opacity(rainAlpha))
             }
+            .font(.caption)
             
             // Snow precipitation (only show if > 0)
             if let qpfSnow = forecast.qpfSnow, qpfSnow > 0.0 {
                 HStack(spacing: 2) {
                     Image(systemName: "snowflake")
-                        .font(.caption2)
                         .foregroundColor(.white.opacity(snowAlpha))
                     Text(String(format: "%.1f cm", qpfSnow))
-                        .font(.caption2)
                         .foregroundColor(.white.opacity(snowAlpha))
                 }
+                .font(.caption)
             }
         }
         .padding()
