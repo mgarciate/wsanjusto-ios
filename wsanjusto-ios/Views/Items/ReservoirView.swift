@@ -165,7 +165,7 @@ struct ReservoirView: View {
             .padding(.top, 8)
         }
         .padding(20)
-        .background(Color.white.opacity(0.1))
+        .background(Color.black.opacity(0.2))
         .cornerRadius(12)
     }
 }

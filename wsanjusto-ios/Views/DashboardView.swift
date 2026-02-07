@@ -13,19 +13,23 @@ struct DashboardView: View {
     
     var body: some View {
         ZStack {
+            // Background image
             Image("weather_dashboard_0")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .edgesIgnoringSafeArea(.all)
+                .frame(width: UIScreen.main.bounds.width)
+                .clipped()
+                .ignoresSafeArea()
             
-            // Blue gradient background
+            // Blue gradient overlay
             LinearGradient(
-                colors: [.blue.opacity(0.2), .black.opacity(0.8)],
+                colors: [.blue.opacity(0.2), .black.opacity(0.6)],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .edgesIgnoringSafeArea(.all)
             
+            // Content
             ScrollView {
                 VStack(spacing: 20) {
                     // Header with location and refresh button
