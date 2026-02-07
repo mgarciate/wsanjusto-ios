@@ -11,14 +11,16 @@ struct DashboardView: View {
     @ObservedObject var viewModel = DashboardViewModel()
     @ObservedObject var authService = AuthenticationService()
     
-    private let skyBlue = Color(red: 0.53, green: 0.81, blue: 0.92)
-    private let steelBlue = Color(red: 0.27, green: 0.51, blue: 0.71)
-    
     var body: some View {
         ZStack {
+            Image("weather_dashboard_0")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .edgesIgnoringSafeArea(.all)
+            
             // Blue gradient background
             LinearGradient(
-                colors: [skyBlue, steelBlue],
+                colors: [.blue.opacity(0.2), .black.opacity(0.8)],
                 startPoint: .top,
                 endPoint: .bottom
             )
