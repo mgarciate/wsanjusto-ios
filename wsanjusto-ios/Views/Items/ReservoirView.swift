@@ -198,7 +198,9 @@ struct ReservoirView_Previews: PreviewProvider {
                 airQualityCategory: "Buena",
                 villamecaActual: 13.3,
                 villamecaWeeklyVolumeVariation: 3.6,
-                villamecaLastYear: 13.4
+                villamecaLastYear: 13.4,
+                iconCode: nil,
+                shortPhrase: nil
             ))
             .padding()
         }

@@ -14,7 +14,7 @@ struct DashboardView: View {
     var body: some View {
         ZStack {
             // Background image
-            Image("weather_dashboard_0")
+            Image(viewModel.measure.weatherBackgroundImageName)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: UIScreen.main.bounds.width)
