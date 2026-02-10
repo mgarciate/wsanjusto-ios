@@ -11,19 +11,29 @@ struct DashboardView: View {
     @ObservedObject var viewModel = DashboardViewModel()
     @ObservedObject var authService = AuthenticationService()
     
-    private let skyBlue = Color(red: 0.53, green: 0.81, blue: 0.92)
-    private let steelBlue = Color(red: 0.27, green: 0.51, blue: 0.71)
-    
     var body: some View {
         ZStack {
-            // Blue gradient background
-            LinearGradient(
-                colors: [skyBlue, steelBlue],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .edgesIgnoringSafeArea(.all)
+            // Background image
+            ZStack {
+                Image(viewModel.weatherBackgroundImageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: UIScreen.main.bounds.width)
+                    .clipped()
+                    .id(viewModel.weatherBackgroundImageName)
+                    .transition(.opacity)
+                
+                // Blue gradient overlay
+                LinearGradient(
+                    colors: [.blue.opacity(0.2), .black.opacity(0.6)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .ignoresSafeArea()
+            .animation(.easeInOut(duration: 1.0), value: viewModel.weatherBackgroundImageName)
             
+            // Content
             ScrollView {
                 VStack(spacing: 20) {
                     // Header with location and refresh button

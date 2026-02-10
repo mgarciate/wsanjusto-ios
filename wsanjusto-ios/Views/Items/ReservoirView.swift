@@ -165,7 +165,7 @@ struct ReservoirView: View {
             .padding(.top, 8)
         }
         .padding(20)
-        .background(Color.white.opacity(0.1))
+        .background(Color.black.opacity(0.4))
         .cornerRadius(12)
     }
 }
@@ -198,7 +198,11 @@ struct ReservoirView_Previews: PreviewProvider {
                 airQualityCategory: "Buena",
                 villamecaActual: 13.3,
                 villamecaWeeklyVolumeVariation: 3.6,
-                villamecaLastYear: 13.4
+                villamecaLastYear: 13.4,
+                iconCode: nil,
+                shortPhrase: nil,
+                sunriseTimeLocal: nil,
+                sunsetTimeLocal: nil
             ))
             .padding()
         }

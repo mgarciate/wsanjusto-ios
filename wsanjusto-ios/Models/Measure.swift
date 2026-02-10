@@ -29,6 +29,10 @@ struct Measure: Identifiable, Codable {
     let villamecaActual: Double?
     let villamecaWeeklyVolumeVariation: Double?
     let villamecaLastYear: Double?
+    let iconCode: Int?
+    let shortPhrase: String?
+    let sunriseTimeLocal: String?
+    let sunsetTimeLocal: String?
     
     enum CodingKeys: String, CodingKey {
         case createdAt, indexArduino, orderByDate, realFeel
@@ -37,12 +41,14 @@ struct Measure: Identifiable, Codable {
         case windSpeed, windGust, windDir
         case airQualityIndex, airQualityCategory
         case villamecaActual, villamecaWeeklyVolumeVariation, villamecaLastYear
+        case iconCode, shortPhrase
+        case sunriseTimeLocal, sunsetTimeLocal
     }
 }
 
 extension Measure {
     static var dummyData: [Measure] {
-        return [Measure(createdAt: 0, indexArduino: 0, orderByDate: 0, realFeel: 0, sensorHumidity1: 0, sensorTemperature1: 0, sensorTemperature2: 0, pressure1: 0, uid: 0, dewpoint: 0, precipTotal: 0, uv: 0, windSpeed: 0, windGust: 0, windDir: 0, airQualityIndex: 0, airQualityCategory: "Buena", villamecaActual: 0, villamecaWeeklyVolumeVariation: 0, villamecaLastYear: 0)]
+        return [Measure(createdAt: 0, indexArduino: 0, orderByDate: 0, realFeel: 0, sensorHumidity1: 0, sensorTemperature1: 0, sensorTemperature2: 0, pressure1: 0, uid: 0, dewpoint: 0, precipTotal: 0, uv: 0, windSpeed: 0, windGust: 0, windDir: 0, airQualityIndex: 0, airQualityCategory: "", villamecaActual: 0, villamecaWeeklyVolumeVariation: 0, villamecaLastYear: 0, iconCode: 31, shortPhrase: nil, sunriseTimeLocal: nil, sunsetTimeLocal: nil)]
     }
     
     var dateString: String {

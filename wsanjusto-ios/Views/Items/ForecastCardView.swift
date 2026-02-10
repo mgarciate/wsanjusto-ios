@@ -50,7 +50,7 @@ struct ForecastCardView: View {
         }
         .padding()
         .frame(width: 120)
-        .background(Color.white.opacity(0.2))
+        .background(Color.black.opacity(0.4))
         .cornerRadius(12)
     }
     
