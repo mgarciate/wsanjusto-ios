@@ -95,7 +95,9 @@ struct MainMiniView_Previews: PreviewProvider {
             villamecaWeeklyVolumeVariation: 0.5,
             villamecaLastYear: 12.8,
             iconCode: 6,
-            shortPhrase: "Sunny day"
+            shortPhrase: "Sunny day",
+            sunriseTimeLocal: nil,
+            sunsetTimeLocal: nil
         )))
         .previewLayout(.fixed(width: 200, height: 200))
         .previewDisplayName("Widget Small")

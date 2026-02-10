@@ -200,7 +200,9 @@ struct ReservoirView_Previews: PreviewProvider {
                 villamecaWeeklyVolumeVariation: 3.6,
                 villamecaLastYear: 13.4,
                 iconCode: nil,
-                shortPhrase: nil
+                shortPhrase: nil,
+                sunriseTimeLocal: nil,
+                sunsetTimeLocal: nil
             ))
             .padding()
         }

@@ -23,9 +23,14 @@ class DashboardViewModel: ObservableObject {
     
     private func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
         let defaultImageSuffix = 7
+        // Check if current time is nighttime (after sunset or before sunrise)
+        let isNightTime = isNightTime(
+            sunriseTimeLocal: measure.sunriseTimeLocal,
+            sunsetTimeLocal: measure.sunsetTimeLocal
+        )
         
         // Map iconCode to image suffix based on CSV data
-        let suffix: Int = measure.iconCode.map { code in
+        var suffix: Int = measure.iconCode.map { code in
             switch code {
             case 13, 14, 15, 16, 25, 41, 42, 43: 1
             case 28, 30, 34: 2
@@ -45,7 +50,53 @@ class DashboardViewModel: ObservableObject {
             }
         } ?? defaultImageSuffix
         
+        // Apply day/night transformations
+        if isNightTime {
+            // Nighttime transformations
+            switch suffix {
+            case 6, 11: suffix = 7
+            case 2, 3: suffix = 4
+            case 9, 10: suffix = 14
+            case 1: suffix = 12
+            case 0, 8, 13: suffix = 5
+            default: break
+            }
+        } else {
+            // Daytime transformations
+            switch suffix {
+            case 7: suffix = 6
+            case 4: suffix = 2
+            case 14: suffix = 9
+            case 12: suffix = 1
+            case 5: suffix = 0
+            default: break
+            }
+        }
+        
         return "weather_dashboard_\(suffix)"
+    }
+    
+    private func isNightTime(sunriseTimeLocal: String?, sunsetTimeLocal: String?) -> Bool {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        
+        let currentTime = dateProvider.now
+        
+        // Parse sunset time from format: "2026-02-12T18:52:23+0100"
+        if let sunsetString = sunsetTimeLocal,
+           let sunsetDate = formatter.date(from: sunsetString),
+           currentTime > sunsetDate {
+            return true
+        }
+        
+        // Parse sunrise time
+        if let sunriseString = sunriseTimeLocal,
+           let sunriseDate = formatter.date(from: sunriseString),
+           currentTime < sunriseDate {
+            return true
+        }
+        
+        return false
     }
     
     func fetchData() {
