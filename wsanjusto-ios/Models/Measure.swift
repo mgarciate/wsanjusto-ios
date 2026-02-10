@@ -45,7 +45,7 @@ struct Measure: Identifiable, Codable {
 
 extension Measure {
     static var dummyData: [Measure] {
-        return [Measure(createdAt: 0, indexArduino: 0, orderByDate: 0, realFeel: 0, sensorHumidity1: 0, sensorTemperature1: 0, sensorTemperature2: 0, pressure1: 0, uid: 0, dewpoint: 0, precipTotal: 0, uv: 0, windSpeed: 0, windGust: 0, windDir: 0, airQualityIndex: 0, airQualityCategory: "Buena", villamecaActual: 0, villamecaWeeklyVolumeVariation: 0, villamecaLastYear: 0, iconCode: 6, shortPhrase: nil)]
+        return [Measure(createdAt: 0, indexArduino: 0, orderByDate: 0, realFeel: 0, sensorHumidity1: 0, sensorTemperature1: 0, sensorTemperature2: 0, pressure1: 0, uid: 0, dewpoint: 0, precipTotal: 0, uv: 0, windSpeed: 0, windGust: 0, windDir: 0, airQualityIndex: 0, airQualityCategory: "", villamecaActual: 0, villamecaWeeklyVolumeVariation: 0, villamecaLastYear: 0, iconCode: 31, shortPhrase: nil)]
     }
     
     var dateString: String {
@@ -85,28 +85,28 @@ extension Measure {
     }
     
     var weatherBackgroundImageName: String {
-        guard let iconCode = iconCode else {
-            return "weather_dashboard_6"
-        }
+        let defaultImageSuffix = 7
         
         // Map iconCode to image suffix based on CSV data
-        let suffix: Int = switch iconCode {
-        case 13, 14, 15, 16, 25, 41, 42, 43: 1
-        case 28, 30, 34: 2
-        case 20, 21, 22: 3
-        case 27, 29, 33: 4
-        case 45: 5
-        case 32, 36: 6
-        case 31: 7
-        case 39, 9, 11: 8
-        case 3, 4, 38: 9
-        case 37: 10
-        case 19, 23, 24: 11
-        case 46: 12
-        case 5, 6, 7: 13
-        case 47: 14
-        default: 6
-        }
+        let suffix: Int = iconCode.map { code in
+            switch code {
+            case 13, 14, 15, 16, 25, 41, 42, 43: 1
+            case 28, 30, 34: 2
+            case 20, 21, 22, 26: 3
+            case 27, 29, 33: 4
+            case 45: 5
+            case 32, 36: 6
+            case 31: 7
+            case 39, 9, 11: 8
+            case 3, 4, 38: 9
+            case 37: 10
+            case 19, 23, 24: 11
+            case 46: 12
+            case 5, 6, 7: 13
+            case 47: 14
+            default: defaultImageSuffix
+            }
+        } ?? defaultImageSuffix
         
         return "weather_dashboard_\(suffix)"
     }

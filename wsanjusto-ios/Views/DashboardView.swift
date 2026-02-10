@@ -14,20 +14,24 @@ struct DashboardView: View {
     var body: some View {
         ZStack {
             // Background image
-            Image(viewModel.measure.weatherBackgroundImageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: UIScreen.main.bounds.width)
-                .clipped()
-                .ignoresSafeArea()
-            
-            // Blue gradient overlay
-            LinearGradient(
-                colors: [.blue.opacity(0.2), .black.opacity(0.6)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .edgesIgnoringSafeArea(.all)
+            ZStack {
+                Image(viewModel.measure.weatherBackgroundImageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: UIScreen.main.bounds.width)
+                    .clipped()
+                    .id(viewModel.measure.weatherBackgroundImageName)
+                    .transition(.opacity)
+                
+                // Blue gradient overlay
+                LinearGradient(
+                    colors: [.blue.opacity(0.2), .black.opacity(0.6)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .ignoresSafeArea()
+            .animation(.easeInOut(duration: 1.0), value: viewModel.measure.weatherBackgroundImageName)
             
             // Content
             ScrollView {
