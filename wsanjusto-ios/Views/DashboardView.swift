@@ -15,12 +15,12 @@ struct DashboardView: View {
         ZStack {
             // Background image
             ZStack {
-                Image(viewModel.measure.weatherBackgroundImageName)
+                Image(viewModel.weatherBackgroundImageName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: UIScreen.main.bounds.width)
                     .clipped()
-                    .id(viewModel.measure.weatherBackgroundImageName)
+                    .id(viewModel.weatherBackgroundImageName)
                     .transition(.opacity)
                 
                 // Blue gradient overlay
@@ -31,7 +31,7 @@ struct DashboardView: View {
                 )
             }
             .ignoresSafeArea()
-            .animation(.easeInOut(duration: 1.0), value: viewModel.measure.weatherBackgroundImageName)
+            .animation(.easeInOut(duration: 1.0), value: viewModel.weatherBackgroundImageName)
             
             // Content
             ScrollView {

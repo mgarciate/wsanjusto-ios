@@ -83,31 +83,4 @@ extension Measure {
         dateFormatter.dateFormat = "EEEE, dd MMMM HH:mm"
         return dateFormatter.string(from: date)
     }
-    
-    var weatherBackgroundImageName: String {
-        let defaultImageSuffix = 7
-        
-        // Map iconCode to image suffix based on CSV data
-        let suffix: Int = iconCode.map { code in
-            switch code {
-            case 13, 14, 15, 16, 25, 41, 42, 43: 1
-            case 28, 30, 34: 2
-            case 20, 21, 22, 26: 3
-            case 27, 29, 33: 4
-            case 45: 5
-            case 32, 36: 6
-            case 31: 7
-            case 39, 9, 11: 8
-            case 3, 4, 38: 9
-            case 37: 10
-            case 19, 23, 24: 11
-            case 46: 12
-            case 5, 6, 7: 13
-            case 47: 14
-            default: defaultImageSuffix
-            }
-        } ?? defaultImageSuffix
-        
-        return "weather_dashboard_\(suffix)"
-    }
 }
