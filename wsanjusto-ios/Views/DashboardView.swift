@@ -25,7 +25,7 @@ struct DashboardView: View {
                 
                 // Blue gradient overlay
                 LinearGradient(
-                    colors: [.blue.opacity(0.2), .black.opacity(0.6)],
+                    colors: [.black.opacity(0.3), .black.opacity(0.8)],
                     startPoint: .top,
                     endPoint: .bottom
                 )

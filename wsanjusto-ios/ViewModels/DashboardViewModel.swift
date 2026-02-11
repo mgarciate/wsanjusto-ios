@@ -22,16 +22,17 @@ class DashboardViewModel: ObservableObject {
     }
     
     private func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
-        let defaultImageSuffix = 7
         // Check if current time is nighttime (after sunset or before sunrise)
         let isNightTime = isNightTime(
             sunriseTimeLocal: measure.sunriseTimeLocal,
             sunsetTimeLocal: measure.sunsetTimeLocal
         )
+        let defaultImageSuffix = isNightTime ? 7 : 6
         
         // Map iconCode to image suffix based on CSV data
         var suffix: Int = measure.iconCode.map { code in
             switch code {
+            case 8, 10, 12, 18, 40: 0
             case 13, 14, 15, 16, 25, 41, 42, 43: 1
             case 28, 30, 34: 2
             case 20, 21, 22, 26: 3
@@ -39,7 +40,7 @@ class DashboardViewModel: ObservableObject {
             case 45: 5
             case 32, 36: 6
             case 31: 7
-            case 39, 9, 11: 8
+            case 39, 9, 11, 17, 35: 8
             case 3, 4, 38: 9
             case 37: 10
             case 19, 23, 24: 11
