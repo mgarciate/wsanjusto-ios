@@ -90,10 +90,14 @@ struct MainMiniView_Previews: PreviewProvider {
             windGust: 15.0,
             windDir: 180,
             airQualityIndex: 50,
-            airQualityCategory: "Buena",
+            airQualityCategory: "Good",
             villamecaActual: 13.3,
             villamecaWeeklyVolumeVariation: 0.5,
-            villamecaLastYear: 12.8
+            villamecaLastYear: 12.8,
+            iconCode: 6,
+            shortPhrase: "Sunny day",
+            sunriseTimeLocal: nil,
+            sunsetTimeLocal: nil
         )))
         .previewLayout(.fixed(width: 200, height: 200))
         .previewDisplayName("Widget Small")

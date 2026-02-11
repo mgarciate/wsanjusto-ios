@@ -36,6 +36,10 @@ extension Measure {
         let villamecaActual = value["villamecaActual"] as? Double
         let villamecaWeeklyVolumeVariation = value["villamecaWeeklyVolumeVariation"] as? Double
         let villamecaLastYear = value["villamecaLastYear"] as? Double
+        let iconCode = value["iconCode"] as? Int
+        let shortPhrase = value["shortPhrase"] as? String
+        let sunriseTimeLocal = value["sunriseTimeLocal"] as? String
+        let sunsetTimeLocal = value["sunsetTimeLocal"] as? String
         
         return Measure(
             createdAt: createdAt,
@@ -57,7 +61,11 @@ extension Measure {
             airQualityCategory: airQualityCategory,
             villamecaActual: villamecaActual,
             villamecaWeeklyVolumeVariation: villamecaWeeklyVolumeVariation,
-            villamecaLastYear: villamecaLastYear
+            villamecaLastYear: villamecaLastYear,
+            iconCode: iconCode,
+            shortPhrase: shortPhrase,
+            sunriseTimeLocal: sunriseTimeLocal,
+            sunsetTimeLocal: sunsetTimeLocal
         )
     }
 }
