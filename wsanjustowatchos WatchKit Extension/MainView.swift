@@ -7,19 +7,6 @@
 
 import SwiftUI
 
-extension View {
-    @ViewBuilder
-    func onChangeCompat<V: Equatable>(of value: V, perform action: @escaping (V) -> Void) -> some View {
-        if #available(watchOS 10.0, *) {
-            self.onChange(of: value) { _, newValue in
-                action(newValue)
-            }
-        } else {
-            self.onChange(of: value, perform: action)
-        }
-    }
-}
-
 struct MainView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel = MainViewModel()
@@ -42,7 +29,7 @@ struct MainView: View {
         .onTapGesture {
             viewModel.loadData()
         }
-        .onChangeCompat(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
                 viewModel.loadData()
