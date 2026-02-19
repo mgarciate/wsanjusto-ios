@@ -7,14 +7,17 @@
 
 import Foundation
 import FirebaseDatabase
+import Observation
 
-class ChartViewModel: ObservableObject {
+@MainActor
+@Observable
+final class ChartViewModel {
     private static let defaultDate = "-"
     private static let defaultTemperature = "- ºC"
-    @Published var measures = [Measure]()
-    @Published var isLoading = false
-    @Published var selectedDate: String = ChartViewModel.defaultDate
-    @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
+    var measures = [Measure]()
+    var isLoading = false
+    var selectedDate: String = ChartViewModel.defaultDate
+    var selectedTemperature: String = ChartViewModel.defaultTemperature
     var domainMeasuresFrom: Double = 0.0
     var domainMeasuresTo: Double = 0.0
     
@@ -26,22 +29,15 @@ class ChartViewModel: ObservableObject {
             #if DEBUG
             print("*** Children \(snapshot.childrenCount)")
             #endif
-            self?.isLoading = false
-            self?.measures = snapshot.children.compactMap { child in
-                guard let measure = Measure.build(with: child as? DataSnapshot) else {
-                    return nil
-                }
-                return measure
+            let measures = snapshot.children.compactMap { child in
+                Measure.build(with: child as? DataSnapshot)
             }
-            self?.domainMeasuresFrom = (self?.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2
-            self?.domainMeasuresTo = (self?.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2
-            // Append half of measures
-//            var resultArray: [Measure] = []
-//
-//            for i in stride(from: 0, to: measures.count, by: 2) {
-//                resultArray.append(measures[i])
-//            }
-//            self?.measures = resultArray
+            Task { @MainActor [weak self] in
+                self?.isLoading = false
+                self?.measures = measures
+                self?.domainMeasuresFrom = (self?.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2
+                self?.domainMeasuresTo = (self?.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2
+            }
         }
     }
     

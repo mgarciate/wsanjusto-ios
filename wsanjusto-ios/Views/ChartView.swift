@@ -9,7 +9,7 @@ import SwiftUI
 import Charts
 
 struct ChartView: View {
-    @StateObject private var viewModel = ChartViewModel()
+    @State private var viewModel = ChartViewModel()
     @State private var touchLocation: CGPoint? = nil
     // TODO: Remove test values
 //    let measures: [Measure] = {
@@ -135,7 +135,7 @@ struct ChartView: View {
             viewModel.fetchData()
             touchLocation = nil
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 viewModel.fetchData()
                 touchLocation = nil

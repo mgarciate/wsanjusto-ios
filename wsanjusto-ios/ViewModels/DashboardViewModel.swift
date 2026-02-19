@@ -6,14 +6,17 @@
 //
 
 import FirebaseDatabase
+import Observation
 import WidgetKit
 
-class DashboardViewModel: ObservableObject {
-    @Published var measure = Measure.dummyData[0]
-    @Published var forecast: [ForecastDay] = []
-    @Published var progressTempValue = 0.0
-    @Published var progressHumValue = 0.0
-    @Published var weatherBackgroundImageName = "weather_dashboard_7"
+@MainActor
+@Observable
+final class DashboardViewModel {
+    var measure = Measure.dummyData[0]
+    var forecast: [ForecastDay] = []
+    var progressTempValue = 0.0
+    var progressHumValue = 0.0
+    var weatherBackgroundImageName = "weather_dashboard_7"
     private var isRefreshing = false
     private let dateProvider: DateProviding
     
@@ -113,14 +116,16 @@ class DashboardViewModel: ObservableObject {
             print("*** DASHBOARD DATA \(dashboardData)")
             #endif
             
-            // Update current measurement
-            if let current = dashboardData.current {
-                self?.update(measure: current)
-            }
-            
-            // Update forecast
-            if let forecast = dashboardData.forecast {
-                self?.forecast = forecast.toDays()
+            Task { @MainActor [weak self] in
+                // Update current measurement
+                if let current = dashboardData.current {
+                    self?.update(measure: current)
+                }
+                
+                // Update forecast
+                if let forecast = dashboardData.forecast {
+                    self?.forecast = forecast.toDays()
+                }
             }
             
             WidgetCenter.shared.reloadAllTimelines()
@@ -137,8 +142,8 @@ class DashboardViewModel: ObservableObject {
         measure = Measure.dummyData[0]
         forecast = []
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self = self else { return }
+        Task {
+            try? await Task.sleep(for: .seconds(1))
             self.update(measure: previousMeasure)
             self.forecast = previousForecast
             self.isRefreshing = false

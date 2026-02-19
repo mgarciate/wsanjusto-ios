@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @ObservedObject var viewModel = DashboardViewModel()
-    @ObservedObject var authService = AuthenticationService()
+    @State private var viewModel = DashboardViewModel()
+    @State private var authService = AuthenticationService()
     
     var body: some View {
         ZStack {
@@ -173,8 +173,8 @@ struct DashboardView: View {
                 .padding(.top)
             }
         }
-        .onReceive(authService.$user) { user in
-            guard let _ = user else { return }
+        .onChange(of: authService.user) { _, user in
+            guard user != nil else { return }
             viewModel.fetchData()
         }
     }

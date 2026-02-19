@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Measure: Identifiable, Codable {
+struct Measure: Identifiable, Codable, Sendable {
     let id: UUID = UUID()
     let createdAt: Int
     let indexArduino: Int

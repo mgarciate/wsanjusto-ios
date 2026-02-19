@@ -9,10 +9,13 @@ import Foundation
 import Firebase
 import AuthenticationServices
 import CryptoKit
+import Observation
 
-class AuthenticationService: ObservableObject {
+@MainActor
+@Observable
+final class AuthenticationService {
     
-    @Published var user: User?
+    var user: User?
     
     private var handle: AuthStateDidChangeListenerHandle?
     
@@ -35,22 +38,24 @@ class AuthenticationService: ObservableObject {
         }
     }
     
-    func updateDisplayName(displayName: String, completionHandler: @escaping (Result<User, Error>) -> Void) {
+    func updateDisplayName(displayName: String, completionHandler: @escaping @MainActor (Result<User, Error>) -> Void) {
         if let user = Auth.auth().currentUser {
             let changeRequest = user.createProfileChangeRequest()
             changeRequest.displayName = displayName
-            changeRequest.commitChanges { error in
-                if let error = error {
-                    completionHandler(.failure(error))
-                }
-                else {
-                    if let updatedUser = Auth.auth().currentUser {
-                        #if DEBUG
-                        print("Successfully updated display name for user [\(user.uid)] to [\(updatedUser.displayName ?? "(empty)")]")
-                        #endif
-                        // force update the local user to trigger the publisher
-                        self.user = updatedUser
-                        completionHandler(.success(updatedUser))
+            changeRequest.commitChanges { [weak self] error in
+                Task { @MainActor in
+                    if let error = error {
+                        completionHandler(.failure(error))
+                    }
+                    else {
+                        if let updatedUser = Auth.auth().currentUser {
+                            #if DEBUG
+                            print("Successfully updated display name for user [\(user.uid)] to [\(updatedUser.displayName ?? "(empty)")]")
+                            #endif
+                            // force update the local user to trigger the publisher
+                            self?.user = updatedUser
+                            completionHandler(.success(updatedUser))
+                        }
                     }
                 }
             }
@@ -61,23 +66,26 @@ class AuthenticationService: ObservableObject {
         if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
         }
-        self.handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+        self.handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
             #if DEBUG
             print("Sign in state has changed.")
             #endif
-            self.user = user
             
-            if let user = user {
-                #if DEBUG
-                let anonymous = user.isAnonymous ? "anonymously " : ""
-                print("User signed in \(anonymous)with user ID \(user.uid). Email: \(user.email ?? "(empty)"), display name: [\(user.displayName ?? "(empty)")]")
-                #endif
-            }
-            else {
-                #if DEBUG
-                print("User signed out.")
-                #endif
-                self.signIn()
+            Task { @MainActor [weak self] in
+                self?.user = user
+                
+                if let user = user {
+                    #if DEBUG
+                    let anonymous = user.isAnonymous ? "anonymously " : ""
+                    print("User signed in \(anonymous)with user ID \(user.uid). Email: \(user.email ?? "(empty)"), display name: [\(user.displayName ?? "(empty)")]")
+                    #endif
+                }
+                else {
+                    #if DEBUG
+                    print("User signed out.")
+                    #endif
+                    self?.signIn()
+                }
             }
         }
     }

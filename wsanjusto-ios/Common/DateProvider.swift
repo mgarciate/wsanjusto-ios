@@ -7,15 +7,15 @@
 
 import Foundation
 
-protocol DateProviding {
+protocol DateProviding: Sendable {
     var now: Date { get }
 }
 
-struct SystemDateProvider: DateProviding {
+struct SystemDateProvider: DateProviding, Sendable {
     var now: Date { Date() }
 }
 
-struct FixedDateProvider: DateProviding {
+struct FixedDateProvider: DateProviding, Sendable {
     let fixedNow: Date
     var now: Date { fixedNow }
 }

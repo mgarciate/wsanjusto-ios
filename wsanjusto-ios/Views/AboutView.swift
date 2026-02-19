@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class AboutViewModel: ObservableObject {
+final class AboutViewModel: ObservableObject {
     @Published var appVersion: String
     
     init() {
@@ -20,7 +20,7 @@ class AboutViewModel: ObservableObject {
 }
 
 struct AboutView: View {
-    @ObservedObject var viewModel = AboutViewModel()
+    @StateObject private var viewModel = AboutViewModel()
     
     var body: some View {
         ZStack {

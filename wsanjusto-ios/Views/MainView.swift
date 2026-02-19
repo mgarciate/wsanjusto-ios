@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-class MainViewModel: ObservableObject {
+final class MainViewModel: ObservableObject {
     
 }
 
 struct MainView: View {
-    @ObservedObject private var viewModel = MainViewModel()
+    @StateObject private var viewModel = MainViewModel()
     
     init() {
         // Set TabBar appearance with visible background

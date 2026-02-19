@@ -14,7 +14,7 @@ extension Array {
     }
 }
 
-struct ForecastDay: Identifiable, Codable {
+struct ForecastDay: Identifiable, Codable, Sendable {
     let id: UUID = UUID()
     let date: Date
     let tempMin: Int
@@ -38,7 +38,7 @@ extension ForecastDay {
     }
 }
 
-struct Forecast5Day: Codable {
+struct Forecast5Day: Codable, Sendable {
     let calendarDayTemperatureMax: [Int?]?
     let calendarDayTemperatureMin: [Int?]?
     let temperatureMax: [Int?]?
@@ -51,7 +51,7 @@ struct Forecast5Day: Codable {
     let iconCode: [Int?]?
 }
 
-struct Forecast: Codable {
+struct Forecast: Codable, Sendable {
     let forecast5days: Forecast5Day?
     
     func toDays() -> [ForecastDay] {

@@ -7,8 +7,8 @@
 
 import Foundation
 
-class NetworkService<T> where T: Codable {
-    enum ApiError: Error {
+final class NetworkService<T>: Sendable where T: Codable {
+    enum ApiError: Error, Sendable {
         case missingURL
         case badResponse
         case parsingError

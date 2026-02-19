@@ -7,12 +7,26 @@
 
 import SwiftUI
 
+extension View {
+    @ViewBuilder
+    func onChangeCompat<V: Equatable>(of value: V, perform action: @escaping (V) -> Void) -> some View {
+        if #available(watchOS 10.0, *) {
+            self.onChange(of: value) { _, newValue in
+                action(newValue)
+            }
+        } else {
+            self.onChange(of: value, perform: action)
+        }
+    }
+}
+
 struct MainView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @ObservedObject var viewModel = MainViewModel()
+    @State private var viewModel = MainViewModel()
     var body: some View {
         ZStack {
-            MainMiniView(measure: $viewModel.measure)
+            @Bindable var bindableViewModel = viewModel
+            MainMiniView(measure: $bindableViewModel.measure)
             if viewModel.isLoading {
                 ProgressView()
                     .progressViewStyle(.circular)
@@ -28,7 +42,7 @@ struct MainView: View {
         .onTapGesture {
             viewModel.loadData()
         }
-        .onChange(of: scenePhase) { phase in
+        .onChangeCompat(of: scenePhase) { phase in
             switch phase {
             case .active:
                 viewModel.loadData()

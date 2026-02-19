@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HistoricalView: View {
-    @StateObject var viewModel = HistoricalViewModel()
+    @State private var viewModel = HistoricalViewModel()
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
@@ -29,7 +29,7 @@ struct HistoricalView: View {
         .onAppear() {
             viewModel.fetchData()
         }
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 viewModel.fetchData()
             }

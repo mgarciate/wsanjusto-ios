@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseDatabase
 
-struct DashboardData: Codable {
+struct DashboardData: Codable, Sendable {
     let current: Measure?
     let forecast: Forecast?
 }

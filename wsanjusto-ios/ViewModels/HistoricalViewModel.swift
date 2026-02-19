@@ -6,9 +6,12 @@
 //
 
 import FirebaseDatabase
+import Observation
 
-class HistoricalViewModel: ObservableObject {
-    @Published var measures = [Measure]()
+@MainActor
+@Observable
+final class HistoricalViewModel {
+    var measures = [Measure]()
 
     func fetchData() {
         let ref = Database.database().reference()
@@ -16,11 +19,11 @@ class HistoricalViewModel: ObservableObject {
             #if DEBUG
             print("*** Children \(snapshot.childrenCount)")
             #endif
-            self?.measures = snapshot.children.compactMap { child in
-                guard let measure = Measure.build(with: child as? DataSnapshot) else {
-                    return nil
-                }
-                return measure
+            let measures = snapshot.children.compactMap { child in
+                Measure.build(with: child as? DataSnapshot)
+            }
+            Task { @MainActor [weak self] in
+                self?.measures = measures
             }
         }
     }

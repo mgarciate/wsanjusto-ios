@@ -6,10 +6,13 @@
 //
 
 import Foundation
+import Observation
 
-final class MainViewModel: ObservableObject {
-    @Published var measure: Measure = Measure.dummyData[0]
-    @Published var isLoading: Bool = false
+@MainActor
+@Observable
+final class MainViewModel {
+    var measure: Measure = Measure.dummyData[0]
+    var isLoading: Bool = false
     
     func loadData() {
         print("*** loadData")
@@ -17,15 +20,11 @@ final class MainViewModel: ObservableObject {
         Task {
             do {
                 let measure = try await NetworkService<Measure>().get(endpoint: "weather/current")
-                DispatchQueue.main.async { [weak self] in
-                    self?.measure = measure
-                }
+                self.measure = measure
             } catch {
                 print("Error", error)
             }
-            DispatchQueue.main.async {
-                self.isLoading = false
-            }
+            self.isLoading = false
         }
     }
 }

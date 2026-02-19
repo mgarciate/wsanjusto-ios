@@ -13,12 +13,12 @@ struct Provider: TimelineProvider {
         SimpleEntry(date: Date(), measure: Measure.dummyData[0])
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+    func getSnapshot(in context: Context, completion: @escaping @Sendable (SimpleEntry) -> ()) {
         let entry = SimpleEntry(date: Date(), measure: Measure.dummyData[0])
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<Entry>) -> ()) {
         Task {
             do {
                 let measure = try await NetworkService<Measure>().get(endpoint: "weather/current")
