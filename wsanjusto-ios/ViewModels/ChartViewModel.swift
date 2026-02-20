@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import FirebaseDatabase
 import Observation
 
 @MainActor
@@ -14,6 +13,10 @@ import Observation
 final class ChartViewModel {
     private static let defaultDate = "-"
     private static let defaultTemperature = "- ºC"
+    private static let measureLimit = 150
+    
+    private let repository: MeasureRepository
+    
     var measures = [Measure]()
     var isLoading = false
     var selectedDate: String = ChartViewModel.defaultDate
@@ -21,24 +24,24 @@ final class ChartViewModel {
     var domainMeasuresFrom: Double = 0.0
     var domainMeasuresTo: Double = 0.0
     
+    init(repository: MeasureRepository = FirebaseMeasureRepository()) {
+        self.repository = repository
+    }
+    
     func fetchData() {
         clear()
         isLoading = true
-        let ref = Database.database().reference()
-        ref.child("measures").queryOrdered(byChild: "orderByDate").queryLimited(toFirst: 150).observeSingleEvent(of: .value) { [weak self] snapshot in
-            #if DEBUG
-            print("*** Children \(snapshot.childrenCount)")
-            #endif
-            let measures = snapshot.children.compactMap { child in
-                Measure.build(with: child as? DataSnapshot)
-            }
-            Task { @MainActor [weak self] in
-                self?.isLoading = false
-                self?.measures = measures
-                self?.domainMeasuresFrom = (self?.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2
-                self?.domainMeasuresTo = (self?.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2
-            }
+        Task {
+            let fetchedMeasures = await repository.fetchMeasures(limit: Self.measureLimit)
+            self.isLoading = false
+            self.setMeasures(fetchedMeasures)
         }
+    }
+    
+    func setMeasures(_ measures: [Measure]) {
+        self.measures = measures
+        self.domainMeasuresFrom = (measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2
+        self.domainMeasuresTo = (measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2
     }
     
     func select(measure: Measure) {

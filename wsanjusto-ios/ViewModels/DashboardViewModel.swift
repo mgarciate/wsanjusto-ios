@@ -150,7 +150,7 @@ final class DashboardViewModel {
         }
     }
     
-    private func update(measure: Measure) {
+    func update(measure: Measure) {
         progressTempValue = min(measure.sensorTemperature1 / 40, 1.0)
         progressHumValue = min(measure.sensorHumidity1 / 100, 1.0)
         weatherBackgroundImageName = calculateWeatherBackgroundImageName(for: measure)
