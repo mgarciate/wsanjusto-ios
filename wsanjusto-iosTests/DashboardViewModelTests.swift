@@ -220,6 +220,210 @@ struct DashboardViewModelTests {
         #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_6")
     }
     
+    // MARK: - Additional Weather Icon Tests
+    
+    @Test("Weather background shows cloudy day image for cloudy iconCode")
+    func weatherBackgroundCloudyDay() async {
+        // iconCode 28, 30, 34 -> suffix 2 (cloudy day)
+        let measure = createMeasure(
+            iconCode: 28,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T19:00:00+0100"
+        )
+        
+        let noonDate = createDate(hour: 12, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: noonDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_2")
+    }
+    
+    @Test("Weather background shows cloudy night image for cloudy iconCode at night")
+    func weatherBackgroundCloudyNight() async {
+        // iconCode 28 -> suffix 2, night transforms 2 -> 4
+        let measure = createMeasure(
+            iconCode: 28,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T18:00:00+0100"
+        )
+        
+        let nightDate = createDate(hour: 21, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: nightDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_4")
+    }
+    
+    @Test("Weather background shows foggy image for fog iconCode")
+    func weatherBackgroundFoggy() async {
+        // iconCode 20, 21, 22, 26 -> suffix 3 (foggy)
+        let measure = createMeasure(
+            iconCode: 20,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T19:00:00+0100"
+        )
+        
+        let noonDate = createDate(hour: 12, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: noonDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_3")
+    }
+    
+    @Test("Weather background shows thunderstorm image for storm iconCode")
+    func weatherBackgroundThunderstorm() async {
+        // iconCode 3, 4, 38 -> suffix 9 (thunderstorm day)
+        let measure = createMeasure(
+            iconCode: 3,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T19:00:00+0100"
+        )
+        
+        let noonDate = createDate(hour: 12, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: noonDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_9")
+    }
+    
+    @Test("Weather background shows night thunderstorm for storm at night")
+    func weatherBackgroundThunderstormNight() async {
+        // iconCode 3 -> suffix 9, night transforms 9 -> 14
+        let measure = createMeasure(
+            iconCode: 3,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T18:00:00+0100"
+        )
+        
+        let nightDate = createDate(hour: 21, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: nightDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_14")
+    }
+    
+    @Test("Weather background shows snow at night transforms correctly")
+    func weatherBackgroundSnowyNight() async {
+        // iconCode 13 -> suffix 1, night transforms 1 -> 12
+        let measure = createMeasure(
+            iconCode: 13,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T18:00:00+0100"
+        )
+        
+        let nightDate = createDate(hour: 21, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: nightDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_12")
+    }
+    
+    @Test("Weather background handles unknown iconCode during day")
+    func weatherBackgroundUnknownCodeDay() async {
+        // Unknown iconCode should default to suffix 6 (day)
+        let measure = createMeasure(
+            iconCode: 999,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T19:00:00+0100"
+        )
+        
+        let noonDate = createDate(hour: 12, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: noonDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_6")
+    }
+    
+    @Test("Weather background handles unknown iconCode at night")
+    func weatherBackgroundUnknownCodeNight() async {
+        // Unknown iconCode should default to suffix 7 (night)
+        let measure = createMeasure(
+            iconCode: 999,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T18:00:00+0100"
+        )
+        
+        let nightDate = createDate(hour: 21, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: nightDate))
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_7")
+    }
+    
+    // MARK: - Progress Value Edge Cases
+    
+    @Test("Progress values handle zero temperature")
+    func progressValuesZeroTemp() async {
+        let measure = createMeasure(
+            sensorTemperature1: 0.0,
+            sensorHumidity1: 0.0
+        )
+        
+        let viewModel = DashboardViewModel()
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.progressTempValue == 0.0)
+        #expect(viewModel.progressHumValue == 0.0)
+    }
+    
+    @Test("Progress values handle negative temperature")
+    func progressValuesNegativeTemp() async {
+        let measure = createMeasure(
+            sensorTemperature1: -10.0,
+            sensorHumidity1: 50.0
+        )
+        
+        let viewModel = DashboardViewModel()
+        viewModel.update(measure: measure)
+        
+        // -10/40 = -0.25, min with 1.0 = -0.25 (but should be capped at 0 ideally)
+        #expect(viewModel.progressTempValue == -0.25)
+    }
+    
+    // MARK: - Measure Update Tests
+    
+    @Test("Update replaces the current measure")
+    func updateReplacesMeasure() async {
+        let viewModel = DashboardViewModel()
+        
+        let measure1 = createMeasure(sensorTemperature1: 15.0)
+        viewModel.update(measure: measure1)
+        #expect(viewModel.measure.sensorTemperature1 == 15.0)
+        
+        let measure2 = createMeasure(sensorTemperature1: 25.0)
+        viewModel.update(measure: measure2)
+        #expect(viewModel.measure.sensorTemperature1 == 25.0)
+    }
+    
+    @Test("Update calculates all values correctly")
+    func updateCalculatesAllValues() async {
+        let noonDate = createDate(hour: 12, minute: 0)
+        let viewModel = DashboardViewModel(dateProvider: FixedDateProvider(fixedNow: noonDate))
+        
+        let measure = createMeasure(
+            sensorTemperature1: 30.0,
+            sensorHumidity1: 75.0,
+            iconCode: 32,
+            sunriseTimeLocal: "2026-02-19T07:30:00+0100",
+            sunsetTimeLocal: "2026-02-19T19:00:00+0100"
+        )
+        
+        viewModel.update(measure: measure)
+        
+        #expect(viewModel.measure.sensorTemperature1 == 30.0)
+        #expect(viewModel.progressTempValue == 0.75) // 30/40
+        #expect(viewModel.progressHumValue == 0.75)  // 75/100
+        #expect(viewModel.weatherBackgroundImageName == "weather_dashboard_6") // sunny day
+    }
+    
     // MARK: - Helper Methods
     
     private func createMeasure(

@@ -153,6 +153,79 @@ struct ChartViewModelTests {
         #expect(viewModel.measures.count == 2)
     }
     
+    // MARK: - Fetch Data Tests
+    
+    @Test("fetchData sets isLoading to true initially")
+    func fetchDataSetsLoading() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = [createMeasure(sensorTemperature1: 15.0)]
+        
+        let viewModel = ChartViewModel(repository: mockRepo)
+        
+        viewModel.fetchData()
+        
+        // isLoading should be true immediately after fetchData
+        #expect(viewModel.isLoading == true)
+        
+        // Wait for async task to complete
+        try? await Task.sleep(for: .milliseconds(100))
+        
+        #expect(viewModel.isLoading == false)
+        #expect(viewModel.measures.count == 1)
+    }
+    
+    @Test("fetchData clears selection before loading")
+    func fetchDataClearsSelection() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = [createMeasure(sensorTemperature1: 25.0)]
+        
+        let viewModel = ChartViewModel(repository: mockRepo)
+        
+        // First select a measure
+        viewModel.select(measure: createMeasure(sensorTemperature1: 30.0))
+        #expect(viewModel.selectedTemperature != "- ºC")
+        
+        // Then fetch data
+        viewModel.fetchData()
+        
+        // Selection should be cleared
+        #expect(viewModel.selectedDate == "-")
+        #expect(viewModel.selectedTemperature == "- ºC")
+    }
+    
+    @Test("fetchData calls repository with correct limit")
+    func fetchDataUsesCorrectLimit() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = []
+        
+        let viewModel = ChartViewModel(repository: mockRepo)
+        viewModel.fetchData()
+        
+        // Wait for async task
+        try? await Task.sleep(for: .milliseconds(100))
+        
+        #expect(mockRepo.fetchCallCount == 1)
+        #expect(mockRepo.lastRequestedLimit == 150)
+    }
+    
+    @Test("fetchData updates domain after loading measures")
+    func fetchDataUpdatesDomain() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = [
+            createMeasure(sensorTemperature1: 5.0),
+            createMeasure(sensorTemperature1: 35.0)
+        ]
+        
+        let viewModel = ChartViewModel(repository: mockRepo)
+        viewModel.fetchData()
+        
+        // Wait for async task
+        try? await Task.sleep(for: .milliseconds(100))
+        
+        #expect(viewModel.domainMeasuresFrom == 3.0) // 5 - 2
+        #expect(viewModel.domainMeasuresTo == 37.0)  // 35 + 2
+    }
+    
     // MARK: - Helper Methods
     
     private func createMeasure(

@@ -97,6 +97,84 @@ struct HistoricalViewModelTests {
         #expect(viewModel.measures.count == 100)
     }
     
+    // MARK: - Fetch Data Tests
+    
+    @Test("fetchData calls repository with correct limit")
+    func fetchDataUsesCorrectLimit() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = []
+        
+        let viewModel = HistoricalViewModel(repository: mockRepo)
+        viewModel.fetchData()
+        
+        // Wait for async task
+        try? await Task.sleep(for: .milliseconds(100))
+        
+        #expect(mockRepo.fetchCallCount == 1)
+        #expect(mockRepo.lastRequestedLimit == 100)
+    }
+    
+    @Test("fetchData updates measures from repository")
+    func fetchDataUpdatesMeasures() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = [
+            createMeasure(sensorTemperature1: 10.0),
+            createMeasure(sensorTemperature1: 20.0),
+            createMeasure(sensorTemperature1: 30.0)
+        ]
+        
+        let viewModel = HistoricalViewModel(repository: mockRepo)
+        #expect(viewModel.measures.isEmpty)
+        
+        viewModel.fetchData()
+        
+        // Wait for async task
+        try? await Task.sleep(for: .milliseconds(100))
+        
+        #expect(viewModel.measures.count == 3)
+    }
+    
+    @Test("fetchData replaces existing measures")
+    func fetchDataReplacesMeasures() async {
+        let mockRepo = MockMeasureRepository()
+        
+        let viewModel = HistoricalViewModel(repository: mockRepo)
+        
+        // Set initial measures
+        viewModel.setMeasures([createMeasure(sensorTemperature1: 50.0)])
+        #expect(viewModel.measures.count == 1)
+        
+        // Fetch new data
+        mockRepo.measuresToReturn = [
+            createMeasure(sensorTemperature1: 10.0),
+            createMeasure(sensorTemperature1: 20.0)
+        ]
+        viewModel.fetchData()
+        
+        // Wait for async task
+        try? await Task.sleep(for: .milliseconds(100))
+        
+        #expect(viewModel.measures.count == 2)
+        #expect(viewModel.measures[0].sensorTemperature1 == 10.0)
+    }
+    
+    @Test("Multiple fetches call repository multiple times")
+    func multipleFetchesCalled() async {
+        let mockRepo = MockMeasureRepository()
+        mockRepo.measuresToReturn = []
+        
+        let viewModel = HistoricalViewModel(repository: mockRepo)
+        
+        viewModel.fetchData()
+        viewModel.fetchData()
+        viewModel.fetchData()
+        
+        // Wait for async tasks
+        try? await Task.sleep(for: .milliseconds(200))
+        
+        #expect(mockRepo.fetchCallCount == 3)
+    }
+    
     // MARK: - Helper Methods
     
     private func createMeasure(
