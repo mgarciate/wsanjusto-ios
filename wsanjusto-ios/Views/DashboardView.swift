@@ -43,6 +43,7 @@ struct DashboardView: View {
                             .font(.title2)
                             .fontWeight(.medium)
                             .foregroundColor(.white)
+                            .accessibilityIdentifier("locationTitle")
                         Spacer()
                     }
                     .overlay(
@@ -58,6 +59,7 @@ struct DashboardView: View {
                                     .foregroundColor(.white)
                                     .padding(12)
                             })
+                            .accessibilityIdentifier("refreshButton")
                         }
                     )
                     .padding(.horizontal)
@@ -67,6 +69,7 @@ struct DashboardView: View {
                         .font(.system(size: 80))
                         .fontWeight(.bold)
                         .foregroundColor(.white)
+                        .accessibilityIdentifier("mainTemperature")
                     .padding(.top, 10)
                     
                     // Weather metrics grid (3x3)
@@ -166,7 +169,9 @@ struct DashboardView: View {
                         Text(viewModel.measure.lastUpdateString)
                             .font(.caption.bold())
                             .foregroundColor(.white.opacity(0.7))
+                            .accessibilityIdentifier("lastUpdateTime")
                     }
+                    .accessibilityIdentifier("lastUpdateSection")
                     .padding(.top, 10)
                     .padding(.bottom, 20)
                 }

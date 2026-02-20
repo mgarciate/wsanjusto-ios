@@ -39,6 +39,17 @@
                ReferencedContainer = "container:wsanjusto-ios.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "09DA9AF82F486BC300ECD465"
+               BuildableName = "wsanjusto-iosUITests.xctest"
+               BlueprintName = "wsanjusto-iosUITests"
+               ReferencedContainer = "container:wsanjusto-ios.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

@@ -94,6 +94,13 @@
 			remoteGlobalIDString = 09405CD4269E263800211DC6;
 			remoteInfo = "wsanjusto-ios";
 		};
+		09DA9AFF2F486BC300ECD465 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 09405CCD269E263800211DC6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09405CD4269E263800211DC6;
+			remoteInfo = "wsanjusto-ios";
+		};
 		09E94AD92855D1D000D7A8D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 09405CCD269E263800211DC6 /* Project object */;
@@ -183,6 +190,7 @@
 		09DA9AD72F47C5F200ECD465 /* wsanjusto-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "wsanjusto-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09DA9AEA2F47C85E00ECD465 /* MeasureRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeasureRepository.swift; sourceTree = "<group>"; };
 		09DA9AEE2F47C86700ECD465 /* FirebaseMeasureRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseMeasureRepository.swift; sourceTree = "<group>"; };
+		09DA9AF92F486BC300ECD465 /* wsanjusto-iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "wsanjusto-iosUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09E94ACC2855D1CE00D7A8D7 /* Tiempo San Justo de la Vega.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tiempo San Justo de la Vega.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09E94AD12855D1D000D7A8D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		09E94AD72855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "wsanjustowatchos WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -200,6 +208,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		09DA9AD82F47C5F200ECD465 /* wsanjusto-iosTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "wsanjusto-iosTests"; sourceTree = "<group>"; };
+		09DA9AFA2F486BC300ECD465 /* wsanjusto-iosUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "wsanjusto-iosUITests"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +232,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		09DA9AD42F47C5F200ECD465 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09DA9AF62F486BC300ECD465 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -353,6 +369,7 @@
 				09E94AD02855D1CE00D7A8D7 /* wsanjustowatchos WatchKit App */,
 				09E94ADB2855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension */,
 				09DA9AD82F47C5F200ECD465 /* wsanjusto-iosTests */,
+				09DA9AFA2F486BC300ECD465 /* wsanjusto-iosUITests */,
 				092FAB74284FBFE8007D95F4 /* Frameworks */,
 				09405CD6269E263800211DC6 /* Products */,
 				09DA9ACF2F47C51D00ECD465 /* wsanjusto-iosTests */,
@@ -367,6 +384,7 @@
 				09E94ACC2855D1CE00D7A8D7 /* Tiempo San Justo de la Vega.app */,
 				09E94AD72855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension.appex */,
 				09DA9AD72F47C5F200ECD465 /* wsanjusto-iosTests.xctest */,
+				09DA9AF92F486BC300ECD465 /* wsanjusto-iosUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -508,6 +526,29 @@
 			productReference = 09DA9AD72F47C5F200ECD465 /* wsanjusto-iosTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		09DA9AF82F486BC300ECD465 /* wsanjusto-iosUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09DA9B012F486BC300ECD465 /* Build configuration list for PBXNativeTarget "wsanjusto-iosUITests" */;
+			buildPhases = (
+				09DA9AF52F486BC300ECD465 /* Sources */,
+				09DA9AF62F486BC300ECD465 /* Frameworks */,
+				09DA9AF72F486BC300ECD465 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09DA9B002F486BC300ECD465 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				09DA9AFA2F486BC300ECD465 /* wsanjusto-iosUITests */,
+			);
+			name = "wsanjusto-iosUITests";
+			packageProductDependencies = (
+			);
+			productName = "wsanjusto-iosUITests";
+			productReference = 09DA9AF92F486BC300ECD465 /* wsanjusto-iosUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		09E94ACB2855D1CE00D7A8D7 /* wsanjustowatchos WatchKit App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 09E94AF12855D1D000D7A8D7 /* Build configuration list for PBXNativeTarget "wsanjustowatchos WatchKit App" */;
@@ -561,6 +602,10 @@
 						CreatedOnToolsVersion = 26.3;
 						TestTargetID = 09405CD4269E263800211DC6;
 					};
+					09DA9AF82F486BC300ECD465 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 09405CD4269E263800211DC6;
+					};
 					09E94ACB2855D1CE00D7A8D7 = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
@@ -590,6 +635,7 @@
 				09E94ACB2855D1CE00D7A8D7 /* wsanjustowatchos WatchKit App */,
 				09E94AD62855D1D000D7A8D7 /* wsanjustowatchos WatchKit Extension */,
 				09DA9AD62F47C5F200ECD465 /* wsanjusto-iosTests */,
+				09DA9AF82F486BC300ECD465 /* wsanjusto-iosUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -617,6 +663,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		09DA9AD52F47C5F200ECD465 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09DA9AF72F486BC300ECD465 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -698,6 +751,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		09DA9AF52F486BC300ECD465 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09E94AD32855D1D000D7A8D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -733,6 +793,11 @@
 			isa = PBXTargetDependency;
 			target = 09405CD4269E263800211DC6 /* wsanjusto-ios */;
 			targetProxy = 09DA9ADB2F47C5F200ECD465 /* PBXContainerItemProxy */;
+		};
+		09DA9B002F486BC300ECD465 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09405CD4269E263800211DC6 /* wsanjusto-ios */;
+			targetProxy = 09DA9AFF2F486BC300ECD465 /* PBXContainerItemProxy */;
 		};
 		09E94ADA2855D1D000D7A8D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1025,6 +1090,59 @@
 			};
 			name = Release;
 		};
+		09DA9B022F486BC300ECD465 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M3XA3ETRDV;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mgarciate.wsanjusto-iosUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "wsanjusto-ios";
+			};
+			name = Debug;
+		};
+		09DA9B032F486BC300ECD465 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M3XA3ETRDV;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mgarciate.wsanjusto-iosUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "wsanjusto-ios";
+			};
+			name = Release;
+		};
 		09E94AEB2855D1D000D7A8D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1192,6 +1310,15 @@
 			buildConfigurations = (
 				09DA9ADE2F47C5F200ECD465 /* Debug */,
 				09DA9ADF2F47C5F200ECD465 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		09DA9B012F486BC300ECD465 /* Build configuration list for PBXNativeTarget "wsanjusto-iosUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09DA9B022F486BC300ECD465 /* Debug */,
+				09DA9B032F486BC300ECD465 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

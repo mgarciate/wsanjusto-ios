@@ -32,22 +32,27 @@ struct MainView: View {
                     Image(systemName: "thermometer")
                     Text("Temperatura")
                 }
+                .accessibilityIdentifier("dashboardTab")
             ChartView()
                 .tabItem {
                     Image("timeline")
                     Text("Gráfico")
                 }
+                .accessibilityIdentifier("chartTab")
             HistoricalView()
                 .tabItem {
                     Image(systemName: "clock.arrow.circlepath")
                     Text("Histórico")
                 }
+                .accessibilityIdentifier("historicalTab")
             AboutView()
                 .tabItem {
                     Image(systemName: "info.circle")
                     Text("Acerca de")
                 }
+                .accessibilityIdentifier("aboutTab")
         }
+        .accessibilityIdentifier("mainTabView")
         .accentColor(Color("PrimaryColor"))
     }
 }
