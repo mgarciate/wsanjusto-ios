@@ -9,8 +9,12 @@ import SwiftUI
 import Charts
 
 struct ChartView: View {
-    @StateObject private var viewModel = ChartViewModel()
+    @ObservedObject private var viewModel: ChartViewModel
     @State private var touchLocation: CGPoint? = nil
+
+    init(viewModel: ChartViewModel = ChartViewModel()) {
+        self.viewModel = viewModel
+    }
     // TODO: Remove test values
 //    let measures: [Measure] = {
 //        var measures = [Measure]()
@@ -35,8 +39,17 @@ struct ChartView: View {
         ZStack {
             Color("SecondaryColor")
                 .edgesIgnoringSafeArea(.all)
-            if viewModel.isLoading {
+            if viewModel.loadingState == .loading {
                 Text("Cargando temperaturas...")
+                    .accessibilityIdentifier("chart.loading")
+                    .foregroundColor(Color("PrimaryColor"))
+            } else if viewModel.loadingState == .empty {
+                Text("No hay temperaturas disponibles")
+                    .accessibilityIdentifier("chart.empty")
+                    .foregroundColor(Color("PrimaryColor"))
+            } else if viewModel.loadingState == .failed {
+                Text("No se han podido cargar las temperaturas")
+                    .accessibilityIdentifier("chart.error")
                     .foregroundColor(Color("PrimaryColor"))
             } else {
                 VStack {
@@ -46,6 +59,7 @@ struct ChartView: View {
                                     Text("Hora:")
                                         .font(.caption)
                                     Text(viewModel.selectedDate)
+                                        .accessibilityIdentifier("chart.selectedDate")
                                         .font(.caption)
                                         .bold()
                                 }
@@ -53,6 +67,7 @@ struct ChartView: View {
                                     Text("Temperatura:")
                                         .font(.caption)
                                     Text(viewModel.selectedTemperature)
+                                        .accessibilityIdentifier("chart.selectedTemperature")
                                         .font(.caption)
                                         .bold()
                                 }

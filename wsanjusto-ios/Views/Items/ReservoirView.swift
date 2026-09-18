@@ -49,6 +49,7 @@ struct ReservoirView: View {
                     .foregroundColor(.white.opacity(0.9))
                 
                 Text("Embalse de Villameca")
+                    .accessibilityIdentifier("dashboard.reservoir.title")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.7))
             }
@@ -58,6 +59,7 @@ struct ReservoirView: View {
                 // Left value - Max capacity
                 VStack {
                     Text(String(format: "%.1f hm³", maxCapacity))
+                        .accessibilityIdentifier("dashboard.reservoir.maxCapacity")
                         .font(.caption)
                     Spacer()
                     Text("0 hm³")
@@ -83,6 +85,7 @@ struct ReservoirView: View {
                                 
                                 // Percentage text centered in filled area
                                 Text(String(format: "%.0f%%", fillPercentage))
+                                    .accessibilityIdentifier("dashboard.reservoir.percentage")
                                     .font(.title)
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
@@ -98,6 +101,7 @@ struct ReservoirView: View {
                 VStack {
                     Spacer()
                     Text(String(format: "%.1f hm³", currentVolume))
+                        .accessibilityIdentifier("dashboard.reservoir.currentVolume")
                         .font(.title3)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)

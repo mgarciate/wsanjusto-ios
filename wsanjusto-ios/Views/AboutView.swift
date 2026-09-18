@@ -32,6 +32,7 @@ struct AboutView: View {
                         .resizable()
                         .frame(width: 100, height: 100)
                     Text("Versión \(viewModel.appVersion)")
+                        .accessibilityIdentifier("about.version")
                 }
                 Text("La aplicación permite visualizar la temperatura actual en San Justo de la Vega. Un pueblo situado en la provincia de León, España. También, se encuentra integrado un indicador que muestra la humedad del sensor capacitivo. Adicionalmente, se pueden comprobar los datos con un segundo sensor de temperatura. En la pantalla principal, se encuentran la temperatura capturada por el dispositivo Dallas DS1820 y la humedad adquirida del DHT22.")
                     .padding()

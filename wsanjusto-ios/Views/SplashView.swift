@@ -8,8 +8,18 @@
 import SwiftUI
 
 struct SplashView: View {
+    let isUITesting: Bool
+    let uiTestScenario: UITestScenario
     @State private var isMainViewPresented = false
     @State private var show = false
+
+    init(
+        isUITesting: Bool = false,
+        uiTestScenario: UITestScenario = .success
+    ) {
+        self.isUITesting = isUITesting
+        self.uiTestScenario = uiTestScenario
+    }
     
     var body: some View {
         
@@ -23,7 +33,6 @@ struct SplashView: View {
                         if show {
                             Circle()
                                 .foregroundColor(.white)
-                                .animation(.easeInOut(duration: 1))
                                 .transition(AnyTransition
                                                 .move(edge: .trailing)
                                                 .combined(with:
@@ -33,7 +42,6 @@ struct SplashView: View {
                             Image("Icon")
                                 .resizable()
                                 .frame(width: 100, height: 100)
-                                .animation(.easeInOut(duration: 1))
                                 .transition(AnyTransition
                                                 .move(edge: .leading)
                                                 .combined(with:
@@ -49,7 +57,6 @@ struct SplashView: View {
                             .foregroundColor(.white)
                             .font(.title)
                             .multilineTextAlignment(.center)
-                            .animation(.easeInOut(duration: 1))
                             .transition(AnyTransition
                                             .move(edge: .trailing)
                                             .combined(with:
@@ -58,9 +65,16 @@ struct SplashView: View {
                     }
                 }
             }
-            .fullScreenCover(isPresented: $isMainViewPresented, content: MainView.init)
+            .fullScreenCover(isPresented: $isMainViewPresented) {
+                MainView(
+                    isUITesting: isUITesting,
+                    uiTestScenario: uiTestScenario
+                )
+            }
             .onAppear() {
-                AuthenticationService().signIn()
+                if !isUITesting {
+                    AuthenticationService().signIn()
+                }
                 withAnimation {
                     self.show.toggle()
                 }
