@@ -9,10 +9,18 @@ import SwiftUI
 
 struct ForecastCardView: View {
     let forecast: ForecastDay
+    private let accessibilityKey: String
+
+    init(forecast: ForecastDay, accessibilityKey: String? = nil) {
+        self.forecast = forecast
+        self.accessibilityKey = accessibilityKey
+            ?? String(Int(forecast.date.timeIntervalSince1970))
+    }
     
     var body: some View {
         VStack(spacing: 8) {
             Text(forecast.dayName)
+                .accessibilityIdentifier("dashboard.forecast.day.\(accessibilityKey)")
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.white)
@@ -24,6 +32,7 @@ struct ForecastCardView: View {
                 .foregroundColor(.white)
             
             Text("\(forecast.tempMin)° | \(forecast.tempMax)°")
+                .accessibilityIdentifier("dashboard.forecast.temperature.\(accessibilityKey)")
                 .font(.caption)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
@@ -33,6 +42,7 @@ struct ForecastCardView: View {
                 Image(systemName: "drop.fill")
                     .foregroundColor(.white.opacity(rainAlpha))
                 Text(String(format: "%.2f mm", forecast.precipitation))
+                    .accessibilityIdentifier("dashboard.forecast.precipitation.\(accessibilityKey)")
                     .foregroundColor(.white.opacity(rainAlpha))
             }
             .font(.caption)

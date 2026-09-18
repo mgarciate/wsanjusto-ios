@@ -1,26 +1,25 @@
-//
-//  HistoricalViewModel.swift
-//  wsanjusto-ios
-//
-//  Created by mgarciate on 15/07/2021.
-//
-
-import FirebaseDatabase
+import Foundation
 
 class HistoricalViewModel: ObservableObject {
     @Published var measures = [Measure]()
+    @Published private(set) var loadingState: MeasuresLoadingState = .idle
+    var isLoading: Bool { loadingState == .loading }
+    private let measuresLoader: any MeasuresLoading
+
+    init(measuresLoader: any MeasuresLoading = FirebaseMeasuresLoader()) {
+        self.measuresLoader = measuresLoader
+    }
 
     func fetchData() {
-        let ref = Database.database().reference()
-        ref.child("measures").queryOrdered(byChild: "orderByDate").queryLimited(toFirst: 100).observeSingleEvent(of: .value) { [weak self] snapshot in
-            #if DEBUG
-            print("*** Children \(snapshot.childrenCount)")
-            #endif
-            self?.measures = snapshot.children.compactMap { child in
-                guard let measure = Measure.build(with: child as? DataSnapshot) else {
-                    return nil
-                }
-                return measure
+        loadingState = .loading
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                measures = try await measuresLoader.fetchMeasures(limit: 100)
+                loadingState = measures.isEmpty ? .empty : .loaded
+            } catch {
+                measures = []
+                loadingState = .failed
             }
         }
     }

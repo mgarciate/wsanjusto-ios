@@ -1,0 +1,35 @@
+{
+  "configurations" : [
+    {
+      "id" : "7D4D882B-BAC3-4EFC-969D-B29FA5A159E2",
+      "name" : "Smoke",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:wsanjusto-ios.xcodeproj",
+      "identifier" : "09405CD4269E263800211DC6",
+      "name" : "wsanjusto-ios"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:wsanjusto-ios.xcodeproj",
+        "identifier" : "09698534305D85D100397877",
+        "name" : "wsanjusto-iosTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:wsanjusto-ios.xcodeproj",
+        "identifier" : "09F04676305DCAB8003732D6",
+        "name" : "wsanjusto-iosUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -61,7 +61,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "09E94ACB2855D1CE00D7A8D7"
             BuildableName = "Tiempo San Justo de la Vega.app"
-            BlueprintName = "wsanjustowatchos WatchKit App"
             ReferencedContainer = "container:wsanjusto-ios.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -79,7 +78,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "09E94ACB2855D1CE00D7A8D7"
             BuildableName = "Tiempo San Justo de la Vega.app"
-            BlueprintName = "wsanjustowatchos WatchKit App"
             ReferencedContainer = "container:wsanjusto-ios.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
