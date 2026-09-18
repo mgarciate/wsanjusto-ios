@@ -2,6 +2,30 @@ import Foundation
 import Testing
 @testable import wsanjusto_ios
 
+struct AppLaunchConfigurationTests {
+    @Test func usesProductionDefaultsWithoutUITestArguments() {
+        let configuration = AppLaunchConfiguration(arguments: ["wsanjusto-ios"])
+
+        #expect(!configuration.isUITesting)
+        #expect(!configuration.skipSplash)
+        #expect(configuration.uiTestScenario == .success)
+    }
+
+    @Test func parsesUITestScenario() {
+        let configuration = AppLaunchConfiguration(arguments: [
+            "wsanjusto-ios",
+            "-UITesting",
+            "-UITestingSkipSplash",
+            "-UITestingScenario",
+            "error"
+        ])
+
+        #expect(configuration.isUITesting)
+        #expect(configuration.skipSplash)
+        #expect(configuration.uiTestScenario == .error)
+    }
+}
+
 struct ArraySafeSubscriptTests {
     @Test func returnsElementAtValidIndex() {
         let values = ["first", "second"]
@@ -302,6 +326,7 @@ struct MeasuresLoadingViewModelTests {
         #expect(viewModel.domainMeasuresFrom == 15)
         #expect(viewModel.domainMeasuresTo == 19)
         #expect(!viewModel.isLoading)
+        #expect(viewModel.loadingState == .loaded)
     }
 
     @Test func chartClearsMeasuresAfterLoadingError() async throws {
@@ -315,6 +340,7 @@ struct MeasuresLoadingViewModelTests {
 
         #expect(viewModel.measures.isEmpty)
         #expect(!viewModel.isLoading)
+        #expect(viewModel.loadingState == .failed)
     }
 
     @Test func historicalFetchesMeasuresAndStopsLoading() async throws {
@@ -327,6 +353,7 @@ struct MeasuresLoadingViewModelTests {
 
         #expect(viewModel.measures.count == 1)
         #expect(!viewModel.isLoading)
+        #expect(viewModel.loadingState == .loaded)
     }
 
     @Test func historicalClearsMeasuresAfterLoadingError() async {
@@ -338,6 +365,7 @@ struct MeasuresLoadingViewModelTests {
 
         #expect(viewModel.measures.isEmpty)
         #expect(!viewModel.isLoading)
+        #expect(viewModel.loadingState == .failed)
     }
 }
 

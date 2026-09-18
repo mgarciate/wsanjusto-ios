@@ -2,7 +2,8 @@ import Foundation
 
 class HistoricalViewModel: ObservableObject {
     @Published var measures = [Measure]()
-    @Published var isLoading = false
+    @Published private(set) var loadingState: MeasuresLoadingState = .idle
+    var isLoading: Bool { loadingState == .loading }
     private let measuresLoader: any MeasuresLoading
 
     init(measuresLoader: any MeasuresLoading = FirebaseMeasuresLoader()) {
@@ -10,14 +11,15 @@ class HistoricalViewModel: ObservableObject {
     }
 
     func fetchData() {
-        isLoading = true
+        loadingState = .loading
         Task { @MainActor [weak self] in
             guard let self else { return }
-            defer { isLoading = false }
             do {
                 measures = try await measuresLoader.fetchMeasures(limit: 100)
+                loadingState = measures.isEmpty ? .empty : .loaded
             } catch {
                 measures = []
+                loadingState = .failed
             }
         }
     }

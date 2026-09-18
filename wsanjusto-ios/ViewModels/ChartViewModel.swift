@@ -12,6 +12,33 @@ protocol MeasuresLoading {
     func fetchMeasures(limit: UInt) async throws -> [Measure]
 }
 
+enum MeasuresLoadingState: Equatable {
+    case idle
+    case loading
+    case loaded
+    case empty
+    case failed
+}
+
+struct UITestMeasuresLoader: MeasuresLoading {
+    enum LoaderError: Error {
+        case expected
+    }
+
+    let scenario: UITestScenario
+
+    func fetchMeasures(limit: UInt) async throws -> [Measure] {
+        switch scenario {
+        case .success:
+            Array(Measure.dummyData.prefix(Int(limit)))
+        case .empty:
+            []
+        case .error:
+            throw LoaderError.expected
+        }
+    }
+}
+
 struct FirebaseMeasuresLoader: MeasuresLoading {
     func fetchMeasures(limit: UInt) async throws -> [Measure] {
         try await withCheckedThrowingContinuation { continuation in
@@ -40,7 +67,8 @@ class ChartViewModel: ObservableObject {
     private static let defaultDate = "-"
     private static let defaultTemperature = "- ºC"
     @Published var measures = [Measure]()
-    @Published var isLoading = false
+    @Published private(set) var loadingState: MeasuresLoadingState = .idle
+    var isLoading: Bool { loadingState == .loading }
     @Published var selectedDate: String = ChartViewModel.defaultDate
     @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
     var domainMeasuresFrom: Double = 0.0
@@ -53,14 +81,16 @@ class ChartViewModel: ObservableObject {
 
     func fetchData() {
         clear()
-        isLoading = true
+        loadingState = .loading
         Task { @MainActor [weak self] in
             guard let self else { return }
-            defer { isLoading = false }
             do {
-                update(measures: try await measuresLoader.fetchMeasures(limit: 150))
+                let measures = try await measuresLoader.fetchMeasures(limit: 150)
+                update(measures: measures)
+                loadingState = measures.isEmpty ? .empty : .loaded
             } catch {
                 update(measures: [])
+                loadingState = .failed
             }
         }
     }

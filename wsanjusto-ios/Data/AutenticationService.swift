@@ -16,8 +16,10 @@ class AuthenticationService: ObservableObject {
     
     private var handle: AuthStateDidChangeListenerHandle?
     
-    init() {
-        registerStateListener()
+    init(isEnabled: Bool = true) {
+        if isEnabled {
+            registerStateListener()
+        }
     }
     
     func signIn() {

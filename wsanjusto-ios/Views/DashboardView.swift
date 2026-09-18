@@ -8,8 +8,19 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @ObservedObject var viewModel = DashboardViewModel()
-    @ObservedObject var authService = AuthenticationService()
+    @ObservedObject var viewModel: DashboardViewModel
+    @ObservedObject var authService: AuthenticationService
+    private let loadRemoteData: Bool
+
+    init(
+        viewModel: DashboardViewModel = DashboardViewModel(),
+        authService: AuthenticationService = AuthenticationService(),
+        loadRemoteData: Bool = true
+    ) {
+        self.viewModel = viewModel
+        self.authService = authService
+        self.loadRemoteData = loadRemoteData
+    }
     
     var body: some View {
         ZStack {
@@ -58,12 +69,15 @@ struct DashboardView: View {
                                     .foregroundColor(.white)
                                     .padding(12)
                             })
+                            .accessibilityLabel("Actualizar datos")
+                            .accessibilityIdentifier("dashboard.refresh")
                         }
                     )
                     .padding(.horizontal)
                     
                     // Large temperature display
                     Text(String(format: "%.1fº", viewModel.measure.sensorTemperature1))
+                        .accessibilityIdentifier("dashboard.temperature")
                         .font(.system(size: 80))
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -134,6 +148,7 @@ struct DashboardView: View {
                     if !viewModel.forecast.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("PREVISIÓN PRÓXIMOS DÍAS")
+                                .accessibilityIdentifier("dashboard.forecast.title")
                                 .font(.caption)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.white.opacity(0.9))
@@ -142,11 +157,15 @@ struct DashboardView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
                                     ForEach(viewModel.forecast) { day in
-                                        ForecastCardView(forecast: day)
+                                        ForecastCardView(
+                                            forecast: day,
+                                            accessibilityKey: forecastAccessibilityKey(for: day)
+                                        )
                                     }
                                 }
                                 .padding(.horizontal)
                             }
+                            .accessibilityIdentifier("dashboard.forecast.scroll")
                         }
                         .padding(.top, 10)
                     }
@@ -173,10 +192,21 @@ struct DashboardView: View {
                 .padding(.top)
             }
         }
+        .accessibilityIdentifier("dashboard.screen")
         .onReceive(authService.$user) { user in
-            guard let _ = user else { return }
+            guard loadRemoteData, user != nil else { return }
             viewModel.fetchData()
         }
+    }
+
+    private func forecastAccessibilityKey(for day: ForecastDay) -> String {
+        if day.id == viewModel.forecast.first?.id {
+            return "first"
+        }
+        if day.id == viewModel.forecast.last?.id {
+            return "last"
+        }
+        return String(Int(day.date.timeIntervalSince1970))
     }
 }
 
