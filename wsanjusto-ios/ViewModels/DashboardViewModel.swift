@@ -9,6 +9,7 @@ import FirebaseDatabase
 import WidgetKit
 
 class DashboardViewModel: ObservableObject {
+    typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping () -> Void) -> Void
     @Published var measure = Measure.dummyData[0]
     @Published var forecast: [ForecastDay] = []
     @Published var progressTempValue = 0.0
@@ -16,12 +17,19 @@ class DashboardViewModel: ObservableObject {
     @Published var weatherBackgroundImageName = "weather_dashboard_7"
     private var isRefreshing = false
     private let dateProvider: DateProviding
-    
-    init(dateProvider: DateProviding = SystemDateProvider()) {
+    private let schedule: Scheduler
+
+    init(
+        dateProvider: DateProviding = SystemDateProvider(),
+        schedule: @escaping Scheduler = { delay, action in
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: action)
+        }
+    ) {
         self.dateProvider = dateProvider
+        self.schedule = schedule
     }
     
-    private func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
+    func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
         // Check if current time is nighttime (after sunset or before sunrise)
         let isNightTime = isNightTime(
             sunriseTimeLocal: measure.sunriseTimeLocal,
@@ -77,7 +85,7 @@ class DashboardViewModel: ObservableObject {
         return "weather_dashboard_\(suffix)"
     }
     
-    private func isNightTime(sunriseTimeLocal: String?, sunsetTimeLocal: String?) -> Bool {
+    func isNightTime(sunriseTimeLocal: String?, sunsetTimeLocal: String?) -> Bool {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         
@@ -137,7 +145,7 @@ class DashboardViewModel: ObservableObject {
         measure = Measure.dummyData[0]
         forecast = []
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+        schedule(1) { [weak self] in
             guard let self = self else { return }
             self.update(measure: previousMeasure)
             self.forecast = previousForecast
@@ -145,7 +153,7 @@ class DashboardViewModel: ObservableObject {
         }
     }
     
-    private func update(measure: Measure) {
+    func update(measure: Measure) {
         progressTempValue = min(measure.sensorTemperature1 / 40, 1.0)
         progressHumValue = min(measure.sensorHumidity1 / 100, 1.0)
         weatherBackgroundImageName = calculateWeatherBackgroundImageName(for: measure)

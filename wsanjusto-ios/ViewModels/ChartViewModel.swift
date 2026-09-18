@@ -8,6 +8,34 @@
 import Foundation
 import FirebaseDatabase
 
+protocol MeasuresLoading {
+    func fetchMeasures(limit: UInt) async throws -> [Measure]
+}
+
+struct FirebaseMeasuresLoader: MeasuresLoading {
+    func fetchMeasures(limit: UInt) async throws -> [Measure] {
+        try await withCheckedThrowingContinuation { continuation in
+            Database.database()
+                .reference()
+                .child("measures")
+                .queryOrdered(byChild: "orderByDate")
+                .queryLimited(toFirst: limit)
+                .observeSingleEvent(
+                    of: .value,
+                    with: { snapshot in
+                        let measures = snapshot.children.compactMap { child in
+                            Measure.build(with: child as? DataSnapshot)
+                        }
+                        continuation.resume(returning: measures)
+                    },
+                    withCancel: { error in
+                        continuation.resume(throwing: error)
+                    }
+                )
+        }
+    }
+}
+
 class ChartViewModel: ObservableObject {
     private static let defaultDate = "-"
     private static let defaultTemperature = "- ºC"
@@ -17,34 +45,32 @@ class ChartViewModel: ObservableObject {
     @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
     var domainMeasuresFrom: Double = 0.0
     var domainMeasuresTo: Double = 0.0
-    
+    private let measuresLoader: any MeasuresLoading
+
+    init(measuresLoader: any MeasuresLoading = FirebaseMeasuresLoader()) {
+        self.measuresLoader = measuresLoader
+    }
+
     func fetchData() {
         clear()
         isLoading = true
-        let ref = Database.database().reference()
-        ref.child("measures").queryOrdered(byChild: "orderByDate").queryLimited(toFirst: 150).observeSingleEvent(of: .value) { [weak self] snapshot in
-            #if DEBUG
-            print("*** Children \(snapshot.childrenCount)")
-            #endif
-            self?.isLoading = false
-            self?.measures = snapshot.children.compactMap { child in
-                guard let measure = Measure.build(with: child as? DataSnapshot) else {
-                    return nil
-                }
-                return measure
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            defer { isLoading = false }
+            do {
+                update(measures: try await measuresLoader.fetchMeasures(limit: 150))
+            } catch {
+                update(measures: [])
             }
-            self?.domainMeasuresFrom = (self?.measures.map { $0.sensorTemperature1 }.min() ?? 0) - 2
-            self?.domainMeasuresTo = (self?.measures.map { $0.sensorTemperature1 }.max() ?? 50) + 2
-            // Append half of measures
-//            var resultArray: [Measure] = []
-//
-//            for i in stride(from: 0, to: measures.count, by: 2) {
-//                resultArray.append(measures[i])
-//            }
-//            self?.measures = resultArray
         }
     }
     
+    func update(measures: [Measure]) {
+        self.measures = measures
+        domainMeasuresFrom = (measures.map(\.sensorTemperature1).min() ?? 0) - 2
+        domainMeasuresTo = (measures.map(\.sensorTemperature1).max() ?? 50) + 2
+    }
+
     func select(measure: Measure) {
         selectedDate = measure.dateString
         selectedTemperature = String(format: "%.2f °C", measure.sensorTemperature1)
