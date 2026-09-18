@@ -7,25 +7,28 @@
 
 import Foundation
 
+@MainActor
 final class MainViewModel: ObservableObject {
     @Published var measure: Measure = Measure.dummyData[0]
     @Published var isLoading: Bool = false
+    private var loadTask: Task<Void, Never>?
     
     func loadData() {
         print("*** loadData")
+        loadTask?.cancel()
         isLoading = true
-        Task {
+        loadTask = Task { @MainActor [weak self] in
             do {
                 let measure = try await NetworkService<Measure>().get(endpoint: "weather/current")
-                DispatchQueue.main.async { [weak self] in
-                    self?.measure = measure
-                }
+                try Task.checkCancellation()
+                self?.measure = measure
+            } catch is CancellationError {
+                return
             } catch {
+                guard !Task.isCancelled else { return }
                 print("Error", error)
             }
-            DispatchQueue.main.async {
-                self.isLoading = false
-            }
+            self?.isLoading = false
         }
     }
 }

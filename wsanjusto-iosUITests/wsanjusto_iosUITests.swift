@@ -1,23 +1,10 @@
 import XCTest
 
 final class WSanJustoSmokeUITests: XCTestCase {
-    private var app: XCUIApplication!
-
-    @MainActor
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-        app = launchApplication()
-    }
-
-    @MainActor
-    override func tearDownWithError() throws {
-        attachFailureScreenshot(from: app, to: self)
-        app.terminate()
-        app = nil
-    }
-
     @MainActor
     func testMainNavigationAndDashboard() {
+        let app = launchApplication()
+        defer { finishTesting(app) }
         let mainScreen = MainScreen(app: app)
         let dashboardScreen = DashboardScreen(app: app)
 
@@ -29,6 +16,8 @@ final class WSanJustoSmokeUITests: XCTestCase {
 
     @MainActor
     func testDashboardShowsReservoirCapacityAfterScrolling() {
+        let app = launchApplication()
+        defer { finishTesting(app) }
         let dashboardScreen = DashboardScreen(app: app)
 
         XCTAssertTrue(dashboardScreen.revealReservoir())
@@ -39,6 +28,8 @@ final class WSanJustoSmokeUITests: XCTestCase {
 
     @MainActor
     func testDashboardShowsLastForecastAfterScrolling() {
+        let app = launchApplication()
+        defer { finishTesting(app) }
         let dashboardScreen = DashboardScreen(app: app)
 
         XCTAssertTrue(dashboardScreen.revealForecast())
@@ -51,6 +42,8 @@ final class WSanJustoSmokeUITests: XCTestCase {
 
     @MainActor
     func testChartLoadsFixtureData() {
+        let app = launchApplication()
+        defer { finishTesting(app) }
         MainScreen(app: app).openChart()
         let chartScreen = ChartScreen(app: app)
 
@@ -61,6 +54,8 @@ final class WSanJustoSmokeUITests: XCTestCase {
 
     @MainActor
     func testHistoryLoadsFixtureData() {
+        let app = launchApplication()
+        defer { finishTesting(app) }
         MainScreen(app: app).openHistory()
 
         XCTAssertTrue(HistoryScreen(app: app).waitForFirstRow())
@@ -68,30 +63,27 @@ final class WSanJustoSmokeUITests: XCTestCase {
 
     @MainActor
     func testAboutShowsApplicationVersion() {
+        let app = launchApplication()
+        defer { finishTesting(app) }
         MainScreen(app: app).openAbout()
         let aboutScreen = AboutScreen(app: app)
 
         XCTAssertTrue(aboutScreen.waitForVersion())
         XCTAssertTrue(aboutScreen.version.hasPrefix("Versión "))
     }
+
+    @MainActor
+    private func finishTesting(_ app: XCUIApplication) {
+        attachFailureScreenshot(from: app, to: self)
+        app.terminate()
+    }
 }
 
 final class WSanJustoStateUITests: XCTestCase {
-    private var app: XCUIApplication?
-
-    @MainActor
-    override func tearDownWithError() throws {
-        if let app {
-            attachFailureScreenshot(from: app, to: self)
-            app.terminate()
-        }
-        app = nil
-    }
-
     @MainActor
     func testChartEmptyState() {
         let app = launchApplication(scenario: .empty)
-        self.app = app
+        defer { finishTesting(app) }
 
         MainScreen(app: app).openChart()
 
@@ -101,7 +93,7 @@ final class WSanJustoStateUITests: XCTestCase {
     @MainActor
     func testChartErrorState() {
         let app = launchApplication(scenario: .error)
-        self.app = app
+        defer { finishTesting(app) }
 
         MainScreen(app: app).openChart()
 
@@ -111,7 +103,7 @@ final class WSanJustoStateUITests: XCTestCase {
     @MainActor
     func testHistoryEmptyState() {
         let app = launchApplication(scenario: .empty)
-        self.app = app
+        defer { finishTesting(app) }
 
         MainScreen(app: app).openHistory()
 
@@ -121,10 +113,16 @@ final class WSanJustoStateUITests: XCTestCase {
     @MainActor
     func testHistoryErrorState() {
         let app = launchApplication(scenario: .error)
-        self.app = app
+        defer { finishTesting(app) }
 
         MainScreen(app: app).openHistory()
 
         XCTAssertTrue(HistoryScreen(app: app).waitForErrorState())
+    }
+
+    @MainActor
+    private func finishTesting(_ app: XCUIApplication) {
+        attachFailureScreenshot(from: app, to: self)
+        app.terminate()
     }
 }

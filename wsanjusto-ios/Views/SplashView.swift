@@ -72,9 +72,6 @@ struct SplashView: View {
                 )
             }
             .onAppear() {
-                if !isUITesting {
-                    AuthenticationService().signIn()
-                }
                 withAnimation {
                     self.show.toggle()
                 }

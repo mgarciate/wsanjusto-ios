@@ -8,8 +8,9 @@
 import FirebaseDatabase
 import WidgetKit
 
+@MainActor
 class DashboardViewModel: ObservableObject {
-    typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping () -> Void) -> Void
+    typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping @MainActor @Sendable () -> Void) -> Void
     @Published var measure = Measure.dummyData[0]
     @Published var forecast: [ForecastDay] = []
     @Published var progressTempValue = 0.0

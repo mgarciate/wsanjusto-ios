@@ -177,6 +177,7 @@ struct ForecastTests {
     }
 }
 
+@MainActor
 struct DashboardViewModelTests {
     @Test func detectsNightBeforeSunriseAndAfterSunset() throws {
         let beforeSunrise = try #require(makeUTCDate(year: 2026, month: 9, day: 18, hour: 4))
@@ -274,6 +275,7 @@ struct DashboardViewModelTests {
     }
 }
 
+@MainActor
 struct ChartViewModelTests {
     @Test func selectsAndClearsMeasure() throws {
         let measure = try #require(makeMeasure(temperature: 19.5))
@@ -313,6 +315,7 @@ struct ChartViewModelTests {
     }
 }
 
+@MainActor
 struct MeasuresLoadingViewModelTests {
     @Test func chartFetchesMeasuresAndStopsLoading() async throws {
         let measure = try #require(makeMeasure(temperature: 17))
@@ -367,6 +370,44 @@ struct MeasuresLoadingViewModelTests {
         #expect(!viewModel.isLoading)
         #expect(viewModel.loadingState == .failed)
     }
+
+    @Test func chartIgnoresFailureFromSupersededRequest() async throws {
+        let latestMeasure = try #require(makeMeasure(temperature: 23))
+        let loader = ControlledMeasuresLoader()
+        let viewModel = ChartViewModel(measuresLoader: loader)
+
+        viewModel.fetchData()
+        await loader.waitForRequestCount(1)
+        viewModel.fetchData()
+        await loader.waitForRequestCount(2)
+
+        await loader.resumeRequest(at: 1, with: .success([latestMeasure]))
+        await waitUntilFinished(viewModel: viewModel)
+        await loader.resumeRequest(at: 0, with: .failure(TestError.expected))
+        await Task.yield()
+
+        #expect(viewModel.measures.first?.sensorTemperature1 == 23)
+        #expect(viewModel.loadingState == .loaded)
+    }
+
+    @Test func historicalIgnoresFailureFromSupersededRequest() async throws {
+        let latestMeasure = try #require(makeMeasure(temperature: 24))
+        let loader = ControlledMeasuresLoader()
+        let viewModel = HistoricalViewModel(measuresLoader: loader)
+
+        viewModel.fetchData()
+        await loader.waitForRequestCount(1)
+        viewModel.fetchData()
+        await loader.waitForRequestCount(2)
+
+        await loader.resumeRequest(at: 1, with: .success([latestMeasure]))
+        await waitUntilFinished(viewModel: viewModel)
+        await loader.resumeRequest(at: 0, with: .failure(TestError.expected))
+        await Task.yield()
+
+        #expect(viewModel.measures.first?.sensorTemperature1 == 24)
+        #expect(viewModel.loadingState == .loaded)
+    }
 }
 
 struct DashboardDataParsingTests {
@@ -408,12 +449,34 @@ private struct StubMeasuresLoader: MeasuresLoading {
     }
 }
 
+private actor ControlledMeasuresLoader: MeasuresLoading {
+    private var continuations: [CheckedContinuation<[Measure], Error>] = []
+
+    func fetchMeasures(limit: UInt) async throws -> [Measure] {
+        try await withCheckedThrowingContinuation { continuation in
+            continuations.append(continuation)
+        }
+    }
+
+    func waitForRequestCount(_ count: Int) async {
+        while continuations.count < count {
+            await Task.yield()
+        }
+    }
+
+    func resumeRequest(at index: Int, with result: Result<[Measure], Error>) {
+        continuations[index].resume(with: result)
+    }
+}
+
+@MainActor
 private func waitUntilFinished(viewModel: ChartViewModel) async {
     while viewModel.isLoading {
         await Task.yield()
     }
 }
 
+@MainActor
 private func waitUntilFinished(viewModel: HistoricalViewModel) async {
     while viewModel.isLoading {
         await Task.yield()
