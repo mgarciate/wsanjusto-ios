@@ -8,8 +8,24 @@
 import FirebaseDatabase
 import WidgetKit
 
+// Owns Firebase's opaque observer registration and removes it on teardown.
+private final class DashboardObservation: @unchecked Sendable {
+    private let reference: DatabaseReference
+    private let handle: DatabaseHandle
+
+    init(reference: DatabaseReference, handle: DatabaseHandle) {
+        self.reference = reference
+        self.handle = handle
+    }
+
+    deinit {
+        reference.removeObserver(withHandle: handle)
+    }
+}
+
+@MainActor
 class DashboardViewModel: ObservableObject {
-    typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping () -> Void) -> Void
+    typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping @MainActor @Sendable () -> Void) -> Void
     @Published var measure = Measure.dummyData[0]
     @Published var forecast: [ForecastDay] = []
     @Published var progressTempValue = 0.0
@@ -18,6 +34,7 @@ class DashboardViewModel: ObservableObject {
     private var isRefreshing = false
     private let dateProvider: DateProviding
     private let schedule: Scheduler
+    private var dashboardObservation: DashboardObservation?
 
     init(
         dateProvider: DateProviding = SystemDateProvider(),
@@ -28,7 +45,7 @@ class DashboardViewModel: ObservableObject {
         self.dateProvider = dateProvider
         self.schedule = schedule
     }
-    
+
     func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
         // Check if current time is nighttime (after sunset or before sunrise)
         let isNightTime = isNightTime(
@@ -109,10 +126,12 @@ class DashboardViewModel: ObservableObject {
     }
     
     func fetchData() {
-        let ref = Database.database().reference()
+        guard dashboardObservation == nil else { return }
+
+        let reference = Database.database().reference().child("dashboard")
         
         // Fetch dashboard data (includes current measure + forecast)
-        ref.child("dashboard").observe(.value) { [weak self] snapshot in
+        let handle = reference.observe(.value) { [weak self] snapshot in
             guard let dashboardData = DashboardData.build(with: snapshot) else {
                 return
             }
@@ -133,6 +152,10 @@ class DashboardViewModel: ObservableObject {
             
             WidgetCenter.shared.reloadAllTimelines()
         }
+        dashboardObservation = DashboardObservation(
+            reference: reference,
+            handle: handle
+        )
     }
     
     func refreshData() {

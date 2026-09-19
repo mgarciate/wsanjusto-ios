@@ -69,10 +69,10 @@ struct DashboardScreen {
             "dashboard.forecast.temperature.last"
         ]
         let forecastScroll = app.scrollViews["dashboard.forecast.scroll"]
-        for _ in 0..<5 where !lastTemperature.isHittable {
+        for _ in 0..<5 where !isVisible(lastTemperature, in: forecastScroll) {
             forecastScroll.swipeLeft()
         }
-        return lastTemperature.isHittable
+        return isVisible(lastTemperature, in: forecastScroll)
     }
 
     var firstForecastTemperature: String {
@@ -96,6 +96,12 @@ struct DashboardScreen {
             app.swipeUp()
         }
         return element.isHittable
+    }
+
+    private func isVisible(_ element: XCUIElement, in container: XCUIElement) -> Bool {
+        guard element.exists else { return false }
+        let frame = element.frame
+        return !frame.isEmpty && !frame.isNull && container.frame.intersects(frame)
     }
 }
 

@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseDatabase
 
-protocol MeasuresLoading {
+protocol MeasuresLoading: Sendable {
     func fetchMeasures(limit: UInt) async throws -> [Measure]
 }
 
@@ -63,6 +63,7 @@ struct FirebaseMeasuresLoader: MeasuresLoading {
     }
 }
 
+@MainActor
 class ChartViewModel: ObservableObject {
     private static let defaultDate = "-"
     private static let defaultTemperature = "- ºC"
@@ -74,25 +75,33 @@ class ChartViewModel: ObservableObject {
     var domainMeasuresFrom: Double = 0.0
     var domainMeasuresTo: Double = 0.0
     private let measuresLoader: any MeasuresLoading
+    private var fetchTask: Task<Void, Never>?
 
     init(measuresLoader: any MeasuresLoading = FirebaseMeasuresLoader()) {
         self.measuresLoader = measuresLoader
     }
 
-    func fetchData() {
+    @discardableResult
+    func fetchData() -> Task<Void, Never> {
+        fetchTask?.cancel()
         clear()
         loadingState = .loading
-        Task { @MainActor [weak self] in
-            guard let self else { return }
+        let task = Task { @MainActor [weak self, measuresLoader] in
             do {
                 let measures = try await measuresLoader.fetchMeasures(limit: 150)
-                update(measures: measures)
-                loadingState = measures.isEmpty ? .empty : .loaded
+                try Task.checkCancellation()
+                self?.update(measures: measures)
+                self?.loadingState = measures.isEmpty ? .empty : .loaded
+            } catch is CancellationError {
+                return
             } catch {
-                update(measures: [])
-                loadingState = .failed
+                guard !Task.isCancelled else { return }
+                self?.update(measures: [])
+                self?.loadingState = .failed
             }
         }
+        fetchTask = task
+        return task
     }
     
     func update(measures: [Measure]) {

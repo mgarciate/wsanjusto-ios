@@ -2,12 +2,13 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var dashboardViewModel: DashboardViewModel
-    @StateObject private var authenticationService: AuthenticationService
+    @ObservedObject private var authenticationService: AuthenticationService
     @StateObject private var chartViewModel: ChartViewModel
     @StateObject private var historicalViewModel: HistoricalViewModel
     private let isUITesting: Bool
 
     init(
+        authenticationService: AuthenticationService = AuthenticationService(isEnabled: false),
         isUITesting: Bool = false,
         uiTestScenario: UITestScenario = .success
     ) {
@@ -18,9 +19,7 @@ struct MainView: View {
             dashboardViewModel.forecast = ForecastDay.uiTestForecast
         }
         _dashboardViewModel = StateObject(wrappedValue: dashboardViewModel)
-        _authenticationService = StateObject(
-            wrappedValue: AuthenticationService(isEnabled: !isUITesting)
-        )
+        self.authenticationService = authenticationService
 
         let measuresLoader: any MeasuresLoading = isUITesting
             ? UITestMeasuresLoader(scenario: uiTestScenario)
