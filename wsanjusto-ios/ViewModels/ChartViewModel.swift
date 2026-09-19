@@ -64,16 +64,11 @@ struct FirebaseMeasuresLoader: MeasuresLoading {
 }
 
 @MainActor
-class ChartViewModel: ObservableObject {
-    private static let defaultDate = "-"
-    private static let defaultTemperature = "- ºC"
+class MeasuresLoadingViewModel: ObservableObject {
     @Published var measures = [Measure]()
     @Published private(set) var loadingState: MeasuresLoadingState = .idle
     var isLoading: Bool { loadingState == .loading }
-    @Published var selectedDate: String = ChartViewModel.defaultDate
-    @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
-    var domainMeasuresFrom: Double = 0.0
-    var domainMeasuresTo: Double = 0.0
+
     private let measuresLoader: any MeasuresLoading
     private var fetchTask: Task<Void, Never>?
 
@@ -82,30 +77,60 @@ class ChartViewModel: ObservableObject {
     }
 
     @discardableResult
-    func fetchData() -> Task<Void, Never> {
+    func fetchMeasures(limit: UInt) -> Task<Void, Never> {
         fetchTask?.cancel()
-        clear()
+        prepareForFetch()
         loadingState = .loading
+
         let task = Task { @MainActor [weak self, measuresLoader] in
             do {
-                let measures = try await measuresLoader.fetchMeasures(limit: 150)
+                let measures = try await measuresLoader.fetchMeasures(limit: limit)
                 try Task.checkCancellation()
-                self?.update(measures: measures)
+                self?.apply(measures: measures)
                 self?.loadingState = measures.isEmpty ? .empty : .loaded
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                self?.update(measures: [])
+                self?.apply(measures: [])
                 self?.loadingState = .failed
             }
         }
         fetchTask = task
         return task
     }
-    
-    func update(measures: [Measure]) {
+
+    func prepareForFetch() {}
+
+    func apply(measures: [Measure]) {
         self.measures = measures
+    }
+}
+
+@MainActor
+final class ChartViewModel: MeasuresLoadingViewModel {
+    private static let defaultDate = "-"
+    private static let defaultTemperature = "- ºC"
+    @Published var selectedDate: String = ChartViewModel.defaultDate
+    @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
+    var domainMeasuresFrom: Double = 0.0
+    var domainMeasuresTo: Double = 0.0
+
+    @discardableResult
+    func fetchData() -> Task<Void, Never> {
+        fetchMeasures(limit: 150)
+    }
+
+    override func prepareForFetch() {
+        clear()
+    }
+
+    override func apply(measures: [Measure]) {
+        update(measures: measures)
+    }
+
+    func update(measures: [Measure]) {
+        super.apply(measures: measures)
         domainMeasuresFrom = (measures.map(\.sensorTemperature1).min() ?? 0) - 2
         domainMeasuresTo = (measures.map(\.sensorTemperature1).max() ?? 50) + 2
     }

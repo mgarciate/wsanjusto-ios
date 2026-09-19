@@ -23,6 +23,86 @@ private final class DashboardObservation: @unchecked Sendable {
     }
 }
 
+struct WeatherPresentationMapper {
+    func backgroundImageName(for measure: Measure, at currentTime: Date) -> String {
+        let isNightTime = isNightTime(
+            sunriseTimeLocal: measure.sunriseTimeLocal,
+            sunsetTimeLocal: measure.sunsetTimeLocal,
+            at: currentTime
+        )
+        let defaultImageSuffix = isNightTime ? 7 : 6
+        var suffix = imageSuffix(for: measure.iconCode) ?? defaultImageSuffix
+
+        if isNightTime {
+            switch suffix {
+            case 6, 11: suffix = 7
+            case 2, 3: suffix = 4
+            case 9, 10: suffix = 14
+            case 1: suffix = 12
+            case 0, 8, 13: suffix = 5
+            default: break
+            }
+        } else {
+            switch suffix {
+            case 7: suffix = 6
+            case 4: suffix = 2
+            case 14: suffix = 9
+            case 12: suffix = 1
+            case 5: suffix = 0
+            default: break
+            }
+        }
+
+        return "weather_dashboard_\(suffix)"
+    }
+
+    func isNightTime(
+        sunriseTimeLocal: String?,
+        sunsetTimeLocal: String?,
+        at currentTime: Date
+    ) -> Bool {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+
+        if let sunsetTimeLocal,
+           let sunsetDate = formatter.date(from: sunsetTimeLocal),
+           currentTime > sunsetDate {
+            return true
+        }
+
+        if let sunriseTimeLocal,
+           let sunriseDate = formatter.date(from: sunriseTimeLocal),
+           currentTime < sunriseDate {
+            return true
+        }
+
+        return false
+    }
+
+    private func imageSuffix(for iconCode: Int?) -> Int? {
+        guard let iconCode else { return nil }
+
+        switch iconCode {
+        case 8, 10, 12, 18, 40: return 0
+        case 13, 14, 15, 16, 25, 41, 42, 43: return 1
+        case 28, 30, 34: return 2
+        case 20, 21, 22, 26: return 3
+        case 27, 29, 33: return 4
+        case 45: return 5
+        case 32, 36: return 6
+        case 31: return 7
+        case 39, 9, 11, 17, 35: return 8
+        case 3, 4, 38: return 9
+        case 37: return 10
+        case 19, 23, 24: return 11
+        case 46: return 12
+        case 5, 6, 7: return 13
+        case 47: return 14
+        default: return nil
+        }
+    }
+}
+
 @MainActor
 class DashboardViewModel: ObservableObject {
     typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping @MainActor @Sendable () -> Void) -> Void
@@ -34,6 +114,7 @@ class DashboardViewModel: ObservableObject {
     private var isRefreshing = false
     private let dateProvider: DateProviding
     private let schedule: Scheduler
+    private let weatherPresentationMapper = WeatherPresentationMapper()
     private var dashboardObservation: DashboardObservation?
 
     init(
@@ -47,82 +128,15 @@ class DashboardViewModel: ObservableObject {
     }
 
     func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
-        // Check if current time is nighttime (after sunset or before sunrise)
-        let isNightTime = isNightTime(
-            sunriseTimeLocal: measure.sunriseTimeLocal,
-            sunsetTimeLocal: measure.sunsetTimeLocal
-        )
-        let defaultImageSuffix = isNightTime ? 7 : 6
-        
-        // Map iconCode to image suffix based on CSV data
-        var suffix: Int = measure.iconCode.map { code in
-            switch code {
-            case 8, 10, 12, 18, 40: 0
-            case 13, 14, 15, 16, 25, 41, 42, 43: 1
-            case 28, 30, 34: 2
-            case 20, 21, 22, 26: 3
-            case 27, 29, 33: 4
-            case 45: 5
-            case 32, 36: 6
-            case 31: 7
-            case 39, 9, 11, 17, 35: 8
-            case 3, 4, 38: 9
-            case 37: 10
-            case 19, 23, 24: 11
-            case 46: 12
-            case 5, 6, 7: 13
-            case 47: 14
-            default: defaultImageSuffix
-            }
-        } ?? defaultImageSuffix
-        
-        // Apply day/night transformations
-        if isNightTime {
-            // Nighttime transformations
-            switch suffix {
-            case 6, 11: suffix = 7
-            case 2, 3: suffix = 4
-            case 9, 10: suffix = 14
-            case 1: suffix = 12
-            case 0, 8, 13: suffix = 5
-            default: break
-            }
-        } else {
-            // Daytime transformations
-            switch suffix {
-            case 7: suffix = 6
-            case 4: suffix = 2
-            case 14: suffix = 9
-            case 12: suffix = 1
-            case 5: suffix = 0
-            default: break
-            }
-        }
-        
-        return "weather_dashboard_\(suffix)"
+        weatherPresentationMapper.backgroundImageName(for: measure, at: dateProvider.now)
     }
-    
+
     func isNightTime(sunriseTimeLocal: String?, sunsetTimeLocal: String?) -> Bool {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-        
-        let currentTime = dateProvider.now
-        
-        // Parse sunset time from format: "2026-02-12T18:52:23+0100"
-        if let sunsetString = sunsetTimeLocal,
-           let sunsetDate = formatter.date(from: sunsetString),
-           currentTime > sunsetDate {
-            return true
-        }
-        
-        // Parse sunrise time
-        if let sunriseString = sunriseTimeLocal,
-           let sunriseDate = formatter.date(from: sunriseString),
-           currentTime < sunriseDate {
-            return true
-        }
-        
-        return false
+        weatherPresentationMapper.isNightTime(
+            sunriseTimeLocal: sunriseTimeLocal,
+            sunsetTimeLocal: sunsetTimeLocal,
+            at: dateProvider.now
+        )
     }
     
     func fetchData() {
