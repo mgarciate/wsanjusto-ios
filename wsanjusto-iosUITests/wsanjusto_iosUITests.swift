@@ -57,8 +57,10 @@ final class WSanJustoSmokeUITests: XCTestCase {
         let app = launchApplication()
         defer { finishTesting(app) }
         MainScreen(app: app).openHistory()
+        let historyScreen = HistoryScreen(app: app)
 
-        XCTAssertTrue(HistoryScreen(app: app).waitForFirstRow())
+        XCTAssertTrue(historyScreen.waitForFirstRow())
+        XCTAssertTrue(historyScreen.revealSecondPage())
     }
 
     @MainActor

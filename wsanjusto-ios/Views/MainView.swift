@@ -24,11 +24,14 @@ struct MainView: View {
         let measuresLoader: any MeasuresLoading = isUITesting
             ? UITestMeasuresLoader(scenario: uiTestScenario)
             : FirebaseMeasuresLoader()
+        let historicalLoader: any HistoricalMeasuresLoading = isUITesting
+            ? UITestHistoricalMeasuresLoader(scenario: uiTestScenario)
+            : FirebaseHistoricalMeasuresLoader()
         _chartViewModel = StateObject(
             wrappedValue: ChartViewModel(measuresLoader: measuresLoader)
         )
         _historicalViewModel = StateObject(
-            wrappedValue: HistoricalViewModel(measuresLoader: measuresLoader)
+            wrappedValue: HistoricalViewModel(loader: historicalLoader)
         )
 
         let appearance = UITabBarAppearance()
