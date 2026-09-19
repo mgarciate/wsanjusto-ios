@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct SplashView: View {
+    let authenticationService: AuthenticationService
+    let isUITesting: Bool
+    let uiTestScenario: UITestScenario
     @State private var isMainViewPresented = false
     @State private var show = false
+
+    init(
+        authenticationService: AuthenticationService = AuthenticationService(isEnabled: false),
+        isUITesting: Bool = false,
+        uiTestScenario: UITestScenario = .success
+    ) {
+        self.authenticationService = authenticationService
+        self.isUITesting = isUITesting
+        self.uiTestScenario = uiTestScenario
+    }
     
     var body: some View {
         
@@ -23,7 +36,6 @@ struct SplashView: View {
                         if show {
                             Circle()
                                 .foregroundColor(.white)
-                                .animation(.easeInOut(duration: 1))
                                 .transition(AnyTransition
                                                 .move(edge: .trailing)
                                                 .combined(with:
@@ -33,7 +45,6 @@ struct SplashView: View {
                             Image("Icon")
                                 .resizable()
                                 .frame(width: 100, height: 100)
-                                .animation(.easeInOut(duration: 1))
                                 .transition(AnyTransition
                                                 .move(edge: .leading)
                                                 .combined(with:
@@ -49,7 +60,6 @@ struct SplashView: View {
                             .foregroundColor(.white)
                             .font(.title)
                             .multilineTextAlignment(.center)
-                            .animation(.easeInOut(duration: 1))
                             .transition(AnyTransition
                                             .move(edge: .trailing)
                                             .combined(with:
@@ -58,9 +68,14 @@ struct SplashView: View {
                     }
                 }
             }
-            .fullScreenCover(isPresented: $isMainViewPresented, content: MainView.init)
+            .fullScreenCover(isPresented: $isMainViewPresented) {
+                MainView(
+                    authenticationService: authenticationService,
+                    isUITesting: isUITesting,
+                    uiTestScenario: uiTestScenario
+                )
+            }
             .onAppear() {
-                AuthenticationService().signIn()
                 withAnimation {
                     self.show.toggle()
                 }

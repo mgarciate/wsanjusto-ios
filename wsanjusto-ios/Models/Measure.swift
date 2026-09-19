@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Measure: Identifiable, Codable {
+struct Measure: Identifiable, Codable, Sendable {
     let id: UUID = UUID()
     let createdAt: Int
     let indexArduino: Int
@@ -52,38 +52,40 @@ extension Measure {
     }
     
     var dateString: String {
-        let date = Date(timeIntervalSince1970: TimeInterval(createdAt))
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.current //Set timezone that you want
-        dateFormatter.locale = NSLocale.current
-        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
-        return dateFormatter.string(from: date)
+        formattedDate(
+            format: "dd/MM/yyyy HH:mm",
+            locale: .current,
+            timeZone: .current
+        )
     }
-    
+
     var shortDateString: String {
-        let date = Date(timeIntervalSince1970: TimeInterval(createdAt))
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.current //Set timezone that you want
-        dateFormatter.locale = NSLocale.current
-        dateFormatter.dateFormat = "dd/MM/yy"
-        return dateFormatter.string(from: date)
+        formattedDate(format: "dd/MM/yy", locale: .current, timeZone: .current)
     }
-    
+
     var shortTimeString: String {
-        let date = Date(timeIntervalSince1970: TimeInterval(createdAt))
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.current //Set timezone that you want
-        dateFormatter.locale = NSLocale.current
-        dateFormatter.dateFormat = "HH:mm"
-        return dateFormatter.string(from: date)
+        formattedDate(format: "HH:mm", locale: .current, timeZone: .current)
     }
-    
+
     var lastUpdateString: String {
-        let date = Date(timeIntervalSince1970: TimeInterval(createdAt))
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone.current
-        dateFormatter.locale = Locale(identifier: "es_ES")
-        dateFormatter.dateFormat = "EEEE, dd MMMM HH:mm"
-        return dateFormatter.string(from: date)
+        formattedDate(
+            format: "EEEE, dd MMMM HH:mm",
+            locale: Locale(identifier: "es_ES"),
+            timeZone: .current
+        )
+    }
+
+    func formattedDate(
+        format: String,
+        locale: Locale,
+        timeZone: TimeZone
+    ) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        formatter.dateFormat = format
+        return formatter.string(
+            from: Date(timeIntervalSince1970: TimeInterval(createdAt))
+        )
     }
 }

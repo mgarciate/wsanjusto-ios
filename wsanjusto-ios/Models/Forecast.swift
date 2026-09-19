@@ -14,7 +14,7 @@ extension Array {
     }
 }
 
-struct ForecastDay: Identifiable, Codable {
+struct ForecastDay: Identifiable, Codable, Sendable {
     let id: UUID = UUID()
     let date: Date
     let tempMin: Int
@@ -38,7 +38,7 @@ extension ForecastDay {
     }
 }
 
-struct Forecast5Day: Codable {
+struct Forecast5Day: Codable, Sendable {
     let calendarDayTemperatureMax: [Int?]?
     let calendarDayTemperatureMin: [Int?]?
     let temperatureMax: [Int?]?
@@ -51,10 +51,13 @@ struct Forecast5Day: Codable {
     let iconCode: [Int?]?
 }
 
-struct Forecast: Codable {
+struct Forecast: Codable, Sendable {
     let forecast5days: Forecast5Day?
     
-    func toDays() -> [ForecastDay] {
+    func toDays(
+        dateProvider: DateProviding = SystemDateProvider(),
+        calendar: Calendar = .current
+    ) -> [ForecastDay] {
         guard let forecast5days = forecast5days,
               let tempMaxArray = forecast5days.calendarDayTemperatureMax,
               let tempMinArray = forecast5days.calendarDayTemperatureMin,
@@ -63,13 +66,13 @@ struct Forecast: Codable {
             return []
         }
         
-        let calendar = Calendar.current
-        let currentHour = calendar.component(.hour, from: Date())
+        let now = dateProvider.now
+        let currentHour = calendar.component(.hour, from: now)
         
         // If it's 2pm (14:00) or later, start from index 1 (tomorrow), otherwise from index 0 (today)
         let startIndex = currentHour >= 14 ? 1 : 0
         
-        var forecastDate = calendar.startOfDay(for: Date())
+        var forecastDate = calendar.startOfDay(for: now)
         
         // Adjust to start from the correct day
         if startIndex == 1 {
@@ -118,4 +121,3 @@ struct Forecast: Codable {
         return days
     }
 }
-

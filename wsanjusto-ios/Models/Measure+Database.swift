@@ -10,9 +10,14 @@ import Firebase
 
 extension Measure {
     static func build(with snapshot: DataSnapshot?) -> Measure? {
-        guard let snapshot = snapshot,
-              let value = snapshot.value as? NSDictionary,
-              let createdAt = value["createdAt"] as? Int,
+        guard let value = snapshot?.value as? [String: Any] else {
+            return nil
+        }
+        return build(from: value)
+    }
+
+    static func build(from value: [String: Any]) -> Measure? {
+        guard let createdAt = value["createdAt"] as? Int,
               let indexArduino = value["indexArduino"] as? Int,
               let orderByDate = value["orderByDate"] as? Int,
               let realFeel = value["realFeel"] as? Double,

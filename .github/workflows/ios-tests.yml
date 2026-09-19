@@ -1,0 +1,48 @@
+name: iOS Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ios-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: xcode-27
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: wsanjusto-iosTests
+            result: UnitTests
+          - target: wsanjusto-iosUITests
+            result: UITests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run ${{ matrix.target }}
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project wsanjusto-ios.xcodeproj \
+            -scheme wsanjusto-ios \
+            -testPlan wsanjusto-ios \
+            -only-testing:${{ matrix.target }} \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=latest' \
+            -resultBundlePath ${{ matrix.result }}.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.result }}
+          path: ${{ matrix.result }}.xcresult
+          if-no-files-found: ignore

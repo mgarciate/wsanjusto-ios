@@ -8,27 +8,25 @@
 import Foundation
 import FirebaseDatabase
 
-struct DashboardData: Codable {
+struct DashboardData: Codable, Sendable {
     let current: Measure?
     let forecast: Forecast?
 }
 
 extension DashboardData {
     static func build(with snapshot: DataSnapshot?) -> DashboardData? {
-        guard let snapshot = snapshot,
-              let value = snapshot.value as? NSDictionary else {
+        guard let value = snapshot?.value as? [String: Any] else {
             return nil
         }
-        
-        var current: Measure?
+        return build(from: value)
+    }
+
+    static func build(from value: [String: Any]) -> DashboardData? {
+        let current = (value["current"] as? [String: Any]).flatMap(Measure.build(from:))
         var forecast: Forecast?
-        
-        // Extract current measurement
-        current = Measure.build(with: snapshot.childSnapshot(forPath: "current"))
-        
-        // Extract forecast
-        if let forecastDict = value["forecast"] as? NSDictionary,
-           let forecast5daysDict = forecastDict["forecast5days"] as? NSDictionary {
+
+        if let forecastDict = value["forecast"] as? [String: Any],
+           let forecast5daysDict = forecastDict["forecast5days"] as? [String: Any] {
             
             let forecast5days = Forecast5Day(
                 calendarDayTemperatureMax: forecast5daysDict["calendarDayTemperatureMax"] as? [Int?],
@@ -49,4 +47,3 @@ extension DashboardData {
         return DashboardData(current: current, forecast: forecast)
     }
 }
-

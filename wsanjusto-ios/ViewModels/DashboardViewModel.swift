@@ -8,52 +8,32 @@
 import FirebaseDatabase
 import WidgetKit
 
-class DashboardViewModel: ObservableObject {
-    @Published var measure = Measure.dummyData[0]
-    @Published var forecast: [ForecastDay] = []
-    @Published var progressTempValue = 0.0
-    @Published var progressHumValue = 0.0
-    @Published var weatherBackgroundImageName = "weather_dashboard_7"
-    private var isRefreshing = false
-    private let dateProvider: DateProviding
-    
-    init(dateProvider: DateProviding = SystemDateProvider()) {
-        self.dateProvider = dateProvider
+// Owns Firebase's opaque observer registration and removes it on teardown.
+private final class DashboardObservation: @unchecked Sendable {
+    private let reference: DatabaseReference
+    private let handle: DatabaseHandle
+
+    init(reference: DatabaseReference, handle: DatabaseHandle) {
+        self.reference = reference
+        self.handle = handle
     }
-    
-    private func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
-        // Check if current time is nighttime (after sunset or before sunrise)
+
+    deinit {
+        reference.removeObserver(withHandle: handle)
+    }
+}
+
+struct WeatherPresentationMapper {
+    func backgroundImageName(for measure: Measure, at currentTime: Date) -> String {
         let isNightTime = isNightTime(
             sunriseTimeLocal: measure.sunriseTimeLocal,
-            sunsetTimeLocal: measure.sunsetTimeLocal
+            sunsetTimeLocal: measure.sunsetTimeLocal,
+            at: currentTime
         )
         let defaultImageSuffix = isNightTime ? 7 : 6
-        
-        // Map iconCode to image suffix based on CSV data
-        var suffix: Int = measure.iconCode.map { code in
-            switch code {
-            case 8, 10, 12, 18, 40: 0
-            case 13, 14, 15, 16, 25, 41, 42, 43: 1
-            case 28, 30, 34: 2
-            case 20, 21, 22, 26: 3
-            case 27, 29, 33: 4
-            case 45: 5
-            case 32, 36: 6
-            case 31: 7
-            case 39, 9, 11, 17, 35: 8
-            case 3, 4, 38: 9
-            case 37: 10
-            case 19, 23, 24: 11
-            case 46: 12
-            case 5, 6, 7: 13
-            case 47: 14
-            default: defaultImageSuffix
-            }
-        } ?? defaultImageSuffix
-        
-        // Apply day/night transformations
+        var suffix = imageSuffix(for: measure.iconCode) ?? defaultImageSuffix
+
         if isNightTime {
-            // Nighttime transformations
             switch suffix {
             case 6, 11: suffix = 7
             case 2, 3: suffix = 4
@@ -63,7 +43,6 @@ class DashboardViewModel: ObservableObject {
             default: break
             }
         } else {
-            // Daytime transformations
             switch suffix {
             case 7: suffix = 6
             case 4: suffix = 2
@@ -73,38 +52,100 @@ class DashboardViewModel: ObservableObject {
             default: break
             }
         }
-        
+
         return "weather_dashboard_\(suffix)"
     }
-    
-    private func isNightTime(sunriseTimeLocal: String?, sunsetTimeLocal: String?) -> Bool {
+
+    func isNightTime(
+        sunriseTimeLocal: String?,
+        sunsetTimeLocal: String?,
+        at currentTime: Date
+    ) -> Bool {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
-        
-        let currentTime = dateProvider.now
-        
-        // Parse sunset time from format: "2026-02-12T18:52:23+0100"
-        if let sunsetString = sunsetTimeLocal,
-           let sunsetDate = formatter.date(from: sunsetString),
+
+        if let sunsetTimeLocal,
+           let sunsetDate = formatter.date(from: sunsetTimeLocal),
            currentTime > sunsetDate {
             return true
         }
-        
-        // Parse sunrise time
-        if let sunriseString = sunriseTimeLocal,
-           let sunriseDate = formatter.date(from: sunriseString),
+
+        if let sunriseTimeLocal,
+           let sunriseDate = formatter.date(from: sunriseTimeLocal),
            currentTime < sunriseDate {
             return true
         }
-        
+
         return false
+    }
+
+    private func imageSuffix(for iconCode: Int?) -> Int? {
+        guard let iconCode else { return nil }
+
+        switch iconCode {
+        case 8, 10, 12, 18, 40: return 0
+        case 13, 14, 15, 16, 25, 41, 42, 43: return 1
+        case 28, 30, 34: return 2
+        case 20, 21, 22, 26: return 3
+        case 27, 29, 33: return 4
+        case 45: return 5
+        case 32, 36: return 6
+        case 31: return 7
+        case 39, 9, 11, 17, 35: return 8
+        case 3, 4, 38: return 9
+        case 37: return 10
+        case 19, 23, 24: return 11
+        case 46: return 12
+        case 5, 6, 7: return 13
+        case 47: return 14
+        default: return nil
+        }
+    }
+}
+
+@MainActor
+class DashboardViewModel: ObservableObject {
+    typealias Scheduler = (_ delay: TimeInterval, _ action: @escaping @MainActor @Sendable () -> Void) -> Void
+    @Published var measure = Measure.dummyData[0]
+    @Published var forecast: [ForecastDay] = []
+    @Published var progressTempValue = 0.0
+    @Published var progressHumValue = 0.0
+    @Published var weatherBackgroundImageName = "weather_dashboard_7"
+    private var isRefreshing = false
+    private let dateProvider: DateProviding
+    private let schedule: Scheduler
+    private let weatherPresentationMapper = WeatherPresentationMapper()
+    private var dashboardObservation: DashboardObservation?
+
+    init(
+        dateProvider: DateProviding = SystemDateProvider(),
+        schedule: @escaping Scheduler = { delay, action in
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: action)
+        }
+    ) {
+        self.dateProvider = dateProvider
+        self.schedule = schedule
+    }
+
+    func calculateWeatherBackgroundImageName(for measure: Measure) -> String {
+        weatherPresentationMapper.backgroundImageName(for: measure, at: dateProvider.now)
+    }
+
+    func isNightTime(sunriseTimeLocal: String?, sunsetTimeLocal: String?) -> Bool {
+        weatherPresentationMapper.isNightTime(
+            sunriseTimeLocal: sunriseTimeLocal,
+            sunsetTimeLocal: sunsetTimeLocal,
+            at: dateProvider.now
+        )
     }
     
     func fetchData() {
-        let ref = Database.database().reference()
+        guard dashboardObservation == nil else { return }
+
+        let reference = Database.database().reference().child("dashboard")
         
         // Fetch dashboard data (includes current measure + forecast)
-        ref.child("dashboard").observe(.value) { [weak self] snapshot in
+        let handle = reference.observe(.value) { [weak self] snapshot in
             guard let dashboardData = DashboardData.build(with: snapshot) else {
                 return
             }
@@ -125,6 +166,10 @@ class DashboardViewModel: ObservableObject {
             
             WidgetCenter.shared.reloadAllTimelines()
         }
+        dashboardObservation = DashboardObservation(
+            reference: reference,
+            handle: handle
+        )
     }
     
     func refreshData() {
@@ -137,7 +182,7 @@ class DashboardViewModel: ObservableObject {
         measure = Measure.dummyData[0]
         forecast = []
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+        schedule(1) { [weak self] in
             guard let self = self else { return }
             self.update(measure: previousMeasure)
             self.forecast = previousForecast
@@ -145,7 +190,7 @@ class DashboardViewModel: ObservableObject {
         }
     }
     
-    private func update(measure: Measure) {
+    func update(measure: Measure) {
         progressTempValue = min(measure.sensorTemperature1 / 40, 1.0)
         progressHumValue = min(measure.sensorHumidity1 / 100, 1.0)
         weatherBackgroundImageName = calculateWeatherBackgroundImageName(for: measure)
