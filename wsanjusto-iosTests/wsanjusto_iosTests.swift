@@ -195,6 +195,35 @@ struct ForecastTests {
 
 @MainActor
 struct DashboardViewModelTests {
+    @Test(arguments: weatherIconMappingCases)
+    func mapsWeatherIconsForDayAndNight(testCase: WeatherIconMappingCase) throws {
+        let midday = try #require(makeUTCDate(year: 2026, month: 9, day: 18, hour: 12))
+        let night = try #require(makeUTCDate(year: 2026, month: 9, day: 18, hour: 20))
+        let mapper = WeatherPresentationMapper()
+        let measure = try #require(makeMeasure(
+            iconCode: testCase.iconCode,
+            sunriseTimeLocal: "2026-09-18T06:00:00Z",
+            sunsetTimeLocal: "2026-09-18T18:00:00Z"
+        ))
+
+        #expect(mapper.backgroundImageName(for: measure, at: midday) == testCase.dayImageName)
+        #expect(mapper.backgroundImageName(for: measure, at: night) == testCase.nightImageName)
+    }
+
+    @Test func usesDayFallbackForUnknownIconAndInvalidTimes() throws {
+        let midday = try #require(makeUTCDate(year: 2026, month: 9, day: 18, hour: 12))
+        let measure = try #require(makeMeasure(
+            iconCode: 999,
+            sunriseTimeLocal: "invalid",
+            sunsetTimeLocal: "invalid"
+        ))
+
+        let imageName = WeatherPresentationMapper()
+            .backgroundImageName(for: measure, at: midday)
+
+        #expect(imageName == "weather_dashboard_6")
+    }
+
     @Test func detectsNightBeforeSunriseAndAfterSunset() throws {
         let beforeSunrise = try #require(makeUTCDate(year: 2026, month: 9, day: 18, hour: 4))
         let afterSunset = try #require(makeUTCDate(year: 2026, month: 9, day: 18, hour: 20))
@@ -333,6 +362,44 @@ struct ChartViewModelTests {
 
 @MainActor
 struct MeasuresLoadingViewModelTests {
+    @Test func usesTheExpectedLimitForEachScreen() async {
+        let loader = RecordingMeasuresLoader(result: .success([]))
+        let chartViewModel = ChartViewModel(measuresLoader: loader)
+        let historicalViewModel = HistoricalViewModel(measuresLoader: loader)
+
+        await chartViewModel.fetchData().value
+        await historicalViewModel.fetchData().value
+
+        #expect(await loader.requestedLimits() == [150, 100])
+    }
+
+    @Test func chartClearsSelectionWhenFetching() async throws {
+        let measure = try #require(makeMeasure(temperature: 19.5))
+        let loader = StubMeasuresLoader(result: .success([measure]))
+        let viewModel = ChartViewModel(measuresLoader: loader)
+        viewModel.select(measure: measure)
+
+        let task = viewModel.fetchData()
+
+        #expect(viewModel.selectedDate == "-")
+        #expect(viewModel.selectedTemperature == "- ºC")
+        await task.value
+    }
+
+    @Test func emptyResponsesProduceEmptyState() async {
+        let loader = StubMeasuresLoader(result: .success([]))
+        let chartViewModel = ChartViewModel(measuresLoader: loader)
+        let historicalViewModel = HistoricalViewModel(measuresLoader: loader)
+
+        await chartViewModel.fetchData().value
+        await historicalViewModel.fetchData().value
+
+        #expect(chartViewModel.measures.isEmpty)
+        #expect(chartViewModel.loadingState == .empty)
+        #expect(historicalViewModel.measures.isEmpty)
+        #expect(historicalViewModel.loadingState == .empty)
+    }
+
     @Test func chartFetchesMeasuresAndStopsLoading() async throws {
         let measure = try #require(makeMeasure(temperature: 17))
         let loader = StubMeasuresLoader(result: .success([measure]))
@@ -473,6 +540,24 @@ private struct StubMeasuresLoader: MeasuresLoading {
     }
 }
 
+private actor RecordingMeasuresLoader: MeasuresLoading {
+    let result: Result<[Measure], Error>
+    private var limits: [UInt] = []
+
+    init(result: Result<[Measure], Error>) {
+        self.result = result
+    }
+
+    func fetchMeasures(limit: UInt) throws -> [Measure] {
+        limits.append(limit)
+        return try result.get()
+    }
+
+    func requestedLimits() -> [UInt] {
+        limits
+    }
+}
+
 private actor ControlledMeasuresLoader: MeasuresLoading {
     private var continuations: [CheckedContinuation<[Measure], Error>] = []
 
@@ -571,6 +656,30 @@ private func makeMeasure(
     dictionary["sunsetTimeLocal"] = sunsetTimeLocal
     return Measure.build(from: dictionary)
 }
+
+struct WeatherIconMappingCase: Sendable {
+    let iconCode: Int
+    let dayImageName: String
+    let nightImageName: String
+}
+
+private let weatherIconMappingCases = [
+    WeatherIconMappingCase(iconCode: 8, dayImageName: "weather_dashboard_0", nightImageName: "weather_dashboard_5"),
+    WeatherIconMappingCase(iconCode: 13, dayImageName: "weather_dashboard_1", nightImageName: "weather_dashboard_12"),
+    WeatherIconMappingCase(iconCode: 28, dayImageName: "weather_dashboard_2", nightImageName: "weather_dashboard_4"),
+    WeatherIconMappingCase(iconCode: 20, dayImageName: "weather_dashboard_3", nightImageName: "weather_dashboard_4"),
+    WeatherIconMappingCase(iconCode: 27, dayImageName: "weather_dashboard_2", nightImageName: "weather_dashboard_4"),
+    WeatherIconMappingCase(iconCode: 45, dayImageName: "weather_dashboard_0", nightImageName: "weather_dashboard_5"),
+    WeatherIconMappingCase(iconCode: 32, dayImageName: "weather_dashboard_6", nightImageName: "weather_dashboard_7"),
+    WeatherIconMappingCase(iconCode: 31, dayImageName: "weather_dashboard_6", nightImageName: "weather_dashboard_7"),
+    WeatherIconMappingCase(iconCode: 39, dayImageName: "weather_dashboard_8", nightImageName: "weather_dashboard_5"),
+    WeatherIconMappingCase(iconCode: 3, dayImageName: "weather_dashboard_9", nightImageName: "weather_dashboard_14"),
+    WeatherIconMappingCase(iconCode: 37, dayImageName: "weather_dashboard_10", nightImageName: "weather_dashboard_14"),
+    WeatherIconMappingCase(iconCode: 19, dayImageName: "weather_dashboard_11", nightImageName: "weather_dashboard_7"),
+    WeatherIconMappingCase(iconCode: 46, dayImageName: "weather_dashboard_1", nightImageName: "weather_dashboard_12"),
+    WeatherIconMappingCase(iconCode: 5, dayImageName: "weather_dashboard_13", nightImageName: "weather_dashboard_5"),
+    WeatherIconMappingCase(iconCode: 47, dayImageName: "weather_dashboard_9", nightImageName: "weather_dashboard_14")
+]
 
 private func makeForecast() -> Forecast {
     Forecast(

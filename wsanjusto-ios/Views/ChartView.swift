@@ -53,32 +53,10 @@ struct ChartView: View {
                     .foregroundColor(Color("PrimaryColor"))
             } else {
                 VStack {
-                    Group {
-                            HStack {
-                                HStack(spacing: 5) {
-                                    Text("Hora:")
-                                        .font(.caption)
-                                    Text(viewModel.selectedDate)
-                                        .accessibilityIdentifier("chart.selectedDate")
-                                        .font(.caption)
-                                        .bold()
-                                }
-                                HStack(spacing: 5) {
-                                    Text("Temperatura:")
-                                        .font(.caption)
-                                    Text(viewModel.selectedTemperature)
-                                        .accessibilityIdentifier("chart.selectedTemperature")
-                                        .font(.caption)
-                                        .bold()
-                                }
-                                Spacer()
-                            }
-                            .padding()
-                    }
-                    .frame(maxWidth: .infinity)
-                    .background(Color("White"))
-                    .cornerRadius(4.0)
-                    .padding()
+                    ChartSelectionHeader(
+                        selectedDate: viewModel.selectedDate,
+                        selectedTemperature: viewModel.selectedTemperature
+                    )
                     Chart(viewModel.measures) {
                         LineMark(
                             x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
@@ -124,20 +102,7 @@ struct ChartView: View {
                                         viewModel.select(measure: measure)
                                 }
                                 if let touchLocation {
-                                    Path { path in
-                                        path.move(to: CGPoint(x: touchLocation.x, y: 0))
-                                        path.addLine(to: CGPoint(x: touchLocation.x, y: geometry.size.height))
-                                    }
-                                    .stroke(Color("RedDarkColor"), lineWidth: 1)
-                                    Path { path in
-                                        path.move(to: CGPoint(x: 0, y: touchLocation.y))
-                                        path.addLine(to: CGPoint(x: geometry.size.width, y: touchLocation.y))
-                                    }
-                                    .stroke(Color("RedDarkColor"), lineWidth: 1)
-                                    Circle()
-                                        .foregroundStyle(Color("RedDarkColor"))
-                                        .frame(width: 5, height: 5)
-                                        .position(touchLocation)
+                                    ChartCrosshair(location: touchLocation, size: geometry.size)
                                 }
                             }
                         }
@@ -177,6 +142,62 @@ struct ChartView: View {
         guard let yLocation = proxy.position(forY: measure.sensorTemperature1) else { return nil }
         touchLocation = CGPoint(x: xLocation, y: yLocation)
         return measure
+    }
+}
+
+private struct ChartSelectionHeader: View {
+    let selectedDate: String
+    let selectedTemperature: String
+
+    var body: some View {
+        HStack {
+            HStack(spacing: 5) {
+                Text("Hora:")
+                    .font(.caption)
+                Text(selectedDate)
+                    .accessibilityIdentifier("chart.selectedDate")
+                    .font(.caption)
+                    .bold()
+            }
+            HStack(spacing: 5) {
+                Text("Temperatura:")
+                    .font(.caption)
+                Text(selectedTemperature)
+                    .accessibilityIdentifier("chart.selectedTemperature")
+                    .font(.caption)
+                    .bold()
+            }
+            Spacer()
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color("White"))
+        .cornerRadius(4.0)
+        .padding()
+    }
+}
+
+private struct ChartCrosshair: View {
+    let location: CGPoint
+    let size: CGSize
+
+    var body: some View {
+        ZStack {
+            Path { path in
+                path.move(to: CGPoint(x: location.x, y: 0))
+                path.addLine(to: CGPoint(x: location.x, y: size.height))
+            }
+            .stroke(Color("RedDarkColor"), lineWidth: 1)
+            Path { path in
+                path.move(to: CGPoint(x: 0, y: location.y))
+                path.addLine(to: CGPoint(x: size.width, y: location.y))
+            }
+            .stroke(Color("RedDarkColor"), lineWidth: 1)
+            Circle()
+                .foregroundStyle(Color("RedDarkColor"))
+                .frame(width: 5, height: 5)
+                .position(location)
+        }
     }
 }
 
