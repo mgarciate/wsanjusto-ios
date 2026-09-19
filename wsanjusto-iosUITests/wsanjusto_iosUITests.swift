@@ -48,8 +48,14 @@ final class WSanJustoSmokeUITests: XCTestCase {
         let chartScreen = ChartScreen(app: app)
 
         XCTAssertTrue(chartScreen.waitForLoadedContent())
-        XCTAssertEqual(chartScreen.selectedTemperature, "- ºC")
+        XCTAssertEqual(chartScreen.selectedValue, "- °C")
         XCTAssertFalse(chartScreen.isLoading)
+
+        chartScreen.selectWind()
+        XCTAssertEqual(chartScreen.selectedValue, "- km/h")
+
+        chartScreen.selectPrecipitation()
+        XCTAssertEqual(chartScreen.selectedValue, "- mm")
     }
 
     @MainActor

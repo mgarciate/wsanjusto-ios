@@ -20,6 +20,64 @@ enum MeasuresLoadingState: Equatable {
     case failed
 }
 
+enum ChartMetric: String, CaseIterable, Identifiable, Sendable {
+    case temperature
+    case windSpeed
+    case precipitation
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .temperature:
+            "Temperatura"
+        case .windSpeed:
+            "Viento"
+        case .precipitation:
+            "Precipitación"
+        }
+    }
+
+    var unit: String {
+        switch self {
+        case .temperature:
+            "°C"
+        case .windSpeed:
+            "km/h"
+        case .precipitation:
+            "mm"
+        }
+    }
+
+    func value(from measure: Measure) -> Double? {
+        let value: Double?
+        switch self {
+        case .temperature:
+            value = measure.sensorTemperature1
+        case .windSpeed:
+            value = measure.windSpeed
+        case .precipitation:
+            value = measure.precipTotal
+        }
+
+        guard let value, value.isFinite else { return nil }
+        guard self == .temperature || value >= 0 else { return nil }
+        return value
+    }
+
+    func formattedValue(_ value: Double?) -> String {
+        guard let value else { return "- \(unit)" }
+        return String(format: "%.2f %@", value, unit)
+    }
+}
+
+struct ChartDataPoint: Identifiable, Sendable {
+    let measure: Measure
+    let value: Double
+
+    var id: UUID { measure.id }
+}
+
 struct UITestMeasuresLoader: MeasuresLoading {
     enum LoaderError: Error {
         case expected
@@ -110,11 +168,43 @@ class MeasuresLoadingViewModel: ObservableObject {
 @MainActor
 final class ChartViewModel: MeasuresLoadingViewModel {
     private static let defaultDate = "-"
-    private static let defaultTemperature = "- ºC"
-    @Published var selectedDate: String = ChartViewModel.defaultDate
-    @Published var selectedTemperature: String = ChartViewModel.defaultTemperature
-    var domainMeasuresFrom: Double = 0.0
-    var domainMeasuresTo: Double = 0.0
+    @Published private var selectedMeasure: Measure?
+    @Published var selectedMetric: ChartMetric = .temperature {
+        didSet {
+            guard selectedMetric != oldValue else { return }
+            clear()
+        }
+    }
+
+    var selectedDate: String {
+        selectedMeasure?.dateString ?? ChartViewModel.defaultDate
+    }
+
+    var selectedValue: String {
+        selectedMetric.formattedValue(
+            selectedMeasure.flatMap(selectedMetric.value(from:))
+        )
+    }
+
+    var chartData: [ChartDataPoint] {
+        measures.compactMap { measure in
+            guard let value = selectedMetric.value(from: measure) else { return nil }
+            return ChartDataPoint(measure: measure, value: value)
+        }
+        .sorted { $0.measure.createdAt < $1.measure.createdAt }
+    }
+
+    var chartDomain: ClosedRange<Double> {
+        let values = chartData.map(\.value)
+
+        switch selectedMetric {
+        case .temperature:
+            return ((values.min() ?? 0) - 2)...((values.max() ?? 50) + 2)
+        case .windSpeed, .precipitation:
+            let maximum = values.max() ?? 0
+            return 0...(maximum + max(maximum * 0.1, 1))
+        }
+    }
 
     @discardableResult
     func fetchData() -> Task<Void, Never> {
@@ -131,17 +221,26 @@ final class ChartViewModel: MeasuresLoadingViewModel {
 
     func update(measures: [Measure]) {
         super.apply(measures: measures)
-        domainMeasuresFrom = (measures.map(\.sensorTemperature1).min() ?? 0) - 2
-        domainMeasuresTo = (measures.map(\.sensorTemperature1).max() ?? 50) + 2
     }
 
     func select(measure: Measure) {
-        selectedDate = measure.dateString
-        selectedTemperature = String(format: "%.2f °C", measure.sensorTemperature1)
+        guard selectedMetric.value(from: measure) != nil else {
+            clear()
+            return
+        }
+        selectedMeasure = measure
+    }
+
+    func closestDataPoint(to date: Date) -> ChartDataPoint? {
+        let timestamp = date.timeIntervalSince1970
+        return chartData.min {
+            abs(TimeInterval($0.measure.createdAt) - timestamp)
+                < abs(TimeInterval($1.measure.createdAt) - timestamp)
+        }
     }
     
     func clear() {
-        selectedDate = ChartViewModel.defaultDate
-        selectedTemperature = ChartViewModel.defaultTemperature
+        selectedMeasure = nil
     }
+
 }

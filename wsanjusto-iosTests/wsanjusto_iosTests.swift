@@ -329,12 +329,12 @@ struct ChartViewModelTests {
         viewModel.select(measure: measure)
 
         #expect(viewModel.selectedDate == measure.dateString)
-        #expect(viewModel.selectedTemperature == "19.50 °C")
+        #expect(viewModel.selectedValue == "19.50 °C")
 
         viewModel.clear()
 
         #expect(viewModel.selectedDate == "-")
-        #expect(viewModel.selectedTemperature == "- ºC")
+        #expect(viewModel.selectedValue == "- °C")
     }
 
     @Test func calculatesDomainWithPadding() throws {
@@ -345,8 +345,7 @@ struct ChartViewModelTests {
         viewModel.update(measures: [cold, warm])
 
         #expect(viewModel.measures.count == 2)
-        #expect(viewModel.domainMeasuresFrom == 3)
-        #expect(viewModel.domainMeasuresTo == 24)
+        #expect(viewModel.chartDomain == 3...24)
     }
 
     @Test func usesDefaultDomainForEmptyMeasures() {
@@ -355,8 +354,80 @@ struct ChartViewModelTests {
         viewModel.update(measures: [])
 
         #expect(viewModel.measures.isEmpty)
-        #expect(viewModel.domainMeasuresFrom == -2)
-        #expect(viewModel.domainMeasuresTo == 52)
+        #expect(viewModel.chartDomain == -2...52)
+    }
+
+    @Test func changesMetricAndFormatsItsSelectedValue() throws {
+        let measure = try #require(makeMeasure(windSpeed: 8.25, precipitation: 1.5))
+        let viewModel = ChartViewModel()
+        viewModel.update(measures: [measure])
+
+        viewModel.selectedMetric = .windSpeed
+        viewModel.select(measure: measure)
+
+        #expect(viewModel.selectedValue == "8.25 km/h")
+        #expect(viewModel.chartDomain == 0...9.25)
+
+        viewModel.selectedMetric = .precipitation
+
+        #expect(viewModel.selectedDate == "-")
+        #expect(viewModel.selectedValue == "- mm")
+        #expect(viewModel.chartDomain == 0...2.5)
+    }
+
+    @Test func omitsMeasuresWithoutTheSelectedMetric() throws {
+        let available = try #require(makeMeasure(windSpeed: 12))
+        let unavailable = try #require(makeMeasure(uid: 43))
+        let viewModel = ChartViewModel()
+        viewModel.update(measures: [available, unavailable])
+
+        viewModel.selectedMetric = .windSpeed
+
+        #expect(viewModel.chartData.count == 1)
+        #expect(viewModel.chartData.first?.measure.uid == available.uid)
+        #expect(viewModel.chartData.first?.value == 12)
+    }
+
+    @Test func ordersPointsAndOmitsInvalidWeatherValues() throws {
+        let latest = try #require(makeMeasure(timestamp: 300, windSpeed: 18))
+        let earliest = try #require(makeMeasure(timestamp: 100, uid: 43, windSpeed: 5))
+        let negative = try #require(makeMeasure(timestamp: 200, uid: 44, windSpeed: -1))
+        let viewModel = ChartViewModel()
+        viewModel.update(measures: [latest, negative, earliest])
+
+        viewModel.selectedMetric = .windSpeed
+
+        #expect(viewModel.chartData.map(\.measure.uid) == [earliest.uid, latest.uid])
+        #expect(viewModel.chartDomain == 0...19.8)
+    }
+
+    @Test func clearsSelectionWhenMeasureHasNoValueForMetric() throws {
+        let wind = try #require(makeMeasure(windSpeed: 12))
+        let missingWind = try #require(makeMeasure(uid: 43))
+        let viewModel = ChartViewModel()
+        viewModel.selectedMetric = .windSpeed
+        viewModel.select(measure: wind)
+
+        viewModel.select(measure: missingWind)
+
+        #expect(viewModel.selectedDate == "-")
+        #expect(viewModel.selectedValue == "- km/h")
+    }
+
+    @Test func findsClosestAvailableDataPointRegardlessOfOrdering() throws {
+        let latest = try #require(makeMeasure(timestamp: 300, windSpeed: 18))
+        let earliest = try #require(makeMeasure(timestamp: 100, uid: 43, windSpeed: 5))
+        let unavailable = try #require(makeMeasure(timestamp: 250, uid: 44))
+        let viewModel = ChartViewModel()
+        viewModel.update(measures: [latest, earliest, unavailable])
+        viewModel.selectedMetric = .windSpeed
+
+        let point = viewModel.closestDataPoint(
+            to: Date(timeIntervalSince1970: 260)
+        )
+
+        #expect(point?.measure.uid == latest.uid)
+        #expect(point?.value == 18)
     }
 }
 
@@ -380,7 +451,7 @@ struct MeasuresLoadingViewModelTests {
         let task = viewModel.fetchData()
 
         #expect(viewModel.selectedDate == "-")
-        #expect(viewModel.selectedTemperature == "- ºC")
+        #expect(viewModel.selectedValue == "- °C")
         await task.value
     }
 
@@ -404,8 +475,7 @@ struct MeasuresLoadingViewModelTests {
 
         #expect(didFinish)
         #expect(viewModel.measures.count == 1)
-        #expect(viewModel.domainMeasuresFrom == 15)
-        #expect(viewModel.domainMeasuresTo == 19)
+        #expect(viewModel.chartDomain == 15...19)
         #expect(!viewModel.isLoading)
         #expect(viewModel.loadingState == .loaded)
     }
@@ -854,7 +924,10 @@ private func makeMeasureDictionary() -> [String: Any] {
 private func makeMeasure(
     temperature: Double = 19.5,
     humidity: Double = 65,
+    timestamp: Int = 1_700_000_000,
     uid: Int = 42,
+    windSpeed: Double? = nil,
+    precipitation: Double? = nil,
     iconCode: Int? = nil,
     sunriseTimeLocal: String? = nil,
     sunsetTimeLocal: String? = nil
@@ -862,7 +935,10 @@ private func makeMeasure(
     var dictionary = makeMeasureDictionary()
     dictionary["sensorTemperature1"] = temperature
     dictionary["sensorHumidity1"] = humidity
+    dictionary["createdAt"] = timestamp
     dictionary["uid"] = uid
+    dictionary["windSpeed"] = windSpeed
+    dictionary["precipTotal"] = precipitation
     dictionary["iconCode"] = iconCode
     dictionary["sunriseTimeLocal"] = sunriseTimeLocal
     dictionary["sunsetTimeLocal"] = sunsetTimeLocal
