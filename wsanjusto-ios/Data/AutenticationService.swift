@@ -10,6 +10,21 @@ import Foundation
 import AuthenticationServices
 import CryptoKit
 
+// Owns Firebase's opaque listener registration and removes it on teardown.
+private final class AuthenticationStateObservation: @unchecked Sendable {
+    private let auth: Auth
+    private let handle: AuthStateDidChangeListenerHandle
+
+    init(auth: Auth, handle: AuthStateDidChangeListenerHandle) {
+        self.auth = auth
+        self.handle = handle
+    }
+
+    deinit {
+        auth.removeStateDidChangeListener(handle)
+    }
+}
+
 @MainActor
 class AuthenticationService: ObservableObject {
     enum AuthenticationError: Error {
@@ -19,21 +34,32 @@ class AuthenticationService: ObservableObject {
     
     @Published var user: User?
     
-    // Swift 6 deinitializers are nonisolated; the handle is otherwise managed on MainActor.
-    private nonisolated(unsafe) var handle: AuthStateDidChangeListenerHandle?
-    
-    init(isEnabled: Bool = true) {
+    private var stateObservation: AuthenticationStateObservation?
+    private var hasStarted = false
+    private let stateListenerStarter: (@MainActor () -> Void)?
+
+    init(
+        isEnabled: Bool = false,
+        stateListenerStarter: (@MainActor () -> Void)? = nil
+    ) {
+        self.stateListenerStarter = stateListenerStarter
+
         if isEnabled {
+            start()
+        }
+    }
+
+    func start() {
+        guard !hasStarted else { return }
+        hasStarted = true
+
+        if let stateListenerStarter {
+            stateListenerStarter()
+        } else {
             registerStateListener()
         }
     }
 
-    deinit {
-        if let handle {
-            Auth.auth().removeStateDidChangeListener(handle)
-        }
-    }
-    
     func signIn() {
         if Auth.auth().currentUser == nil {
             Auth.auth().signInAnonymously()
@@ -78,14 +104,13 @@ class AuthenticationService: ObservableObject {
     }
     
     private func registerStateListener() {
-        if let handle = handle {
-            Auth.auth().removeStateDidChangeListener(handle)
-        }
-        self.handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+        let auth = Auth.auth()
+        let handle = auth.addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
                 self?.handleAuthenticationStateChange(user: user)
             }
         }
+        stateObservation = AuthenticationStateObservation(auth: auth, handle: handle)
     }
 
     private func handleAuthenticationStateChange(user: User?) {

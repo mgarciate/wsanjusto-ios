@@ -26,6 +26,22 @@ struct AppLaunchConfigurationTests {
     }
 }
 
+@MainActor
+struct AuthenticationServiceTests {
+    @Test func startsStateListenerOnlyOnce() {
+        var startCount = 0
+        let service = AuthenticationService(
+            isEnabled: false,
+            stateListenerStarter: { startCount += 1 }
+        )
+
+        service.start()
+        service.start()
+
+        #expect(startCount == 1)
+    }
+}
+
 struct ArraySafeSubscriptTests {
     @Test func returnsElementAtValidIndex() {
         let values = ["first", "second"]
@@ -323,8 +339,9 @@ struct MeasuresLoadingViewModelTests {
         let viewModel = ChartViewModel(measuresLoader: loader)
 
         viewModel.fetchData()
-        await waitUntilFinished(viewModel: viewModel)
+        let didFinish = await waitUntilFinished(viewModel: viewModel)
 
+        #expect(didFinish)
         #expect(viewModel.measures.count == 1)
         #expect(viewModel.domainMeasuresFrom == 15)
         #expect(viewModel.domainMeasuresTo == 19)
@@ -339,8 +356,9 @@ struct MeasuresLoadingViewModelTests {
         viewModel.update(measures: [previous])
 
         viewModel.fetchData()
-        await waitUntilFinished(viewModel: viewModel)
+        let didFinish = await waitUntilFinished(viewModel: viewModel)
 
+        #expect(didFinish)
         #expect(viewModel.measures.isEmpty)
         #expect(!viewModel.isLoading)
         #expect(viewModel.loadingState == .failed)
@@ -352,8 +370,9 @@ struct MeasuresLoadingViewModelTests {
         let viewModel = HistoricalViewModel(measuresLoader: loader)
 
         viewModel.fetchData()
-        await waitUntilFinished(viewModel: viewModel)
+        let didFinish = await waitUntilFinished(viewModel: viewModel)
 
+        #expect(didFinish)
         #expect(viewModel.measures.count == 1)
         #expect(!viewModel.isLoading)
         #expect(viewModel.loadingState == .loaded)
@@ -364,8 +383,9 @@ struct MeasuresLoadingViewModelTests {
         let viewModel = HistoricalViewModel(measuresLoader: loader)
 
         viewModel.fetchData()
-        await waitUntilFinished(viewModel: viewModel)
+        let didFinish = await waitUntilFinished(viewModel: viewModel)
 
+        #expect(didFinish)
         #expect(viewModel.measures.isEmpty)
         #expect(!viewModel.isLoading)
         #expect(viewModel.loadingState == .failed)
@@ -376,15 +396,17 @@ struct MeasuresLoadingViewModelTests {
         let loader = ControlledMeasuresLoader()
         let viewModel = ChartViewModel(measuresLoader: loader)
 
-        viewModel.fetchData()
-        await loader.waitForRequestCount(1)
-        viewModel.fetchData()
-        await loader.waitForRequestCount(2)
+        let supersededTask = viewModel.fetchData()
+        let firstRequestStarted = await loader.waitForRequestCount(1)
+        try #require(firstRequestStarted)
+        let latestTask = viewModel.fetchData()
+        let secondRequestStarted = await loader.waitForRequestCount(2)
+        try #require(secondRequestStarted)
 
         await loader.resumeRequest(at: 1, with: .success([latestMeasure]))
-        await waitUntilFinished(viewModel: viewModel)
+        await latestTask.value
         await loader.resumeRequest(at: 0, with: .failure(TestError.expected))
-        await Task.yield()
+        await supersededTask.value
 
         #expect(viewModel.measures.first?.sensorTemperature1 == 23)
         #expect(viewModel.loadingState == .loaded)
@@ -395,15 +417,17 @@ struct MeasuresLoadingViewModelTests {
         let loader = ControlledMeasuresLoader()
         let viewModel = HistoricalViewModel(measuresLoader: loader)
 
-        viewModel.fetchData()
-        await loader.waitForRequestCount(1)
-        viewModel.fetchData()
-        await loader.waitForRequestCount(2)
+        let supersededTask = viewModel.fetchData()
+        let firstRequestStarted = await loader.waitForRequestCount(1)
+        try #require(firstRequestStarted)
+        let latestTask = viewModel.fetchData()
+        let secondRequestStarted = await loader.waitForRequestCount(2)
+        try #require(secondRequestStarted)
 
         await loader.resumeRequest(at: 1, with: .success([latestMeasure]))
-        await waitUntilFinished(viewModel: viewModel)
+        await latestTask.value
         await loader.resumeRequest(at: 0, with: .failure(TestError.expected))
-        await Task.yield()
+        await supersededTask.value
 
         #expect(viewModel.measures.first?.sensorTemperature1 == 24)
         #expect(viewModel.loadingState == .loaded)
@@ -458,10 +482,14 @@ private actor ControlledMeasuresLoader: MeasuresLoading {
         }
     }
 
-    func waitForRequestCount(_ count: Int) async {
+    func waitForRequestCount(_ count: Int) async -> Bool {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .seconds(5))
         while continuations.count < count {
+            guard clock.now < deadline else { return false }
             await Task.yield()
         }
+        return true
     }
 
     func resumeRequest(at index: Int, with result: Result<[Measure], Error>) {
@@ -470,17 +498,25 @@ private actor ControlledMeasuresLoader: MeasuresLoading {
 }
 
 @MainActor
-private func waitUntilFinished(viewModel: ChartViewModel) async {
+private func waitUntilFinished(viewModel: ChartViewModel) async -> Bool {
+    let clock = ContinuousClock()
+    let deadline = clock.now.advanced(by: .seconds(5))
     while viewModel.isLoading {
+        guard clock.now < deadline else { return false }
         await Task.yield()
     }
+    return true
 }
 
 @MainActor
-private func waitUntilFinished(viewModel: HistoricalViewModel) async {
+private func waitUntilFinished(viewModel: HistoricalViewModel) async -> Bool {
+    let clock = ContinuousClock()
+    let deadline = clock.now.advanced(by: .seconds(5))
     while viewModel.isLoading {
+        guard clock.now < deadline else { return false }
         await Task.yield()
     }
+    return true
 }
 
 private let utcCalendar: Calendar = {

@@ -81,11 +81,12 @@ class ChartViewModel: ObservableObject {
         self.measuresLoader = measuresLoader
     }
 
-    func fetchData() {
+    @discardableResult
+    func fetchData() -> Task<Void, Never> {
         fetchTask?.cancel()
         clear()
         loadingState = .loading
-        fetchTask = Task { @MainActor [weak self, measuresLoader] in
+        let task = Task { @MainActor [weak self, measuresLoader] in
             do {
                 let measures = try await measuresLoader.fetchMeasures(limit: 150)
                 try Task.checkCancellation()
@@ -99,6 +100,8 @@ class ChartViewModel: ObservableObject {
                 self?.loadingState = .failed
             }
         }
+        fetchTask = task
+        return task
     }
     
     func update(measures: [Measure]) {

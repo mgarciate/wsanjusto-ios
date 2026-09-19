@@ -8,15 +8,18 @@
 import SwiftUI
 
 struct SplashView: View {
+    let authenticationService: AuthenticationService
     let isUITesting: Bool
     let uiTestScenario: UITestScenario
     @State private var isMainViewPresented = false
     @State private var show = false
 
     init(
+        authenticationService: AuthenticationService = AuthenticationService(isEnabled: false),
         isUITesting: Bool = false,
         uiTestScenario: UITestScenario = .success
     ) {
+        self.authenticationService = authenticationService
         self.isUITesting = isUITesting
         self.uiTestScenario = uiTestScenario
     }
@@ -67,6 +70,7 @@ struct SplashView: View {
             }
             .fullScreenCover(isPresented: $isMainViewPresented) {
                 MainView(
+                    authenticationService: authenticationService,
                     isUITesting: isUITesting,
                     uiTestScenario: uiTestScenario
                 )

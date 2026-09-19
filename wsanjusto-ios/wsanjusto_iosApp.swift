@@ -37,21 +37,37 @@ struct AppLaunchConfiguration {
 @main
 struct wsanjusto_iosApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
-    private let launchConfiguration = AppLaunchConfiguration.current
+    @StateObject private var authenticationService: AuthenticationService
+    private let launchConfiguration: AppLaunchConfiguration
+
+    init() {
+        let launchConfiguration = AppLaunchConfiguration.current
+        self.launchConfiguration = launchConfiguration
+        _authenticationService = StateObject(
+            wrappedValue: AuthenticationService(isEnabled: false)
+        )
+    }
 
     var body: some Scene {
         WindowGroup {
-            if launchConfiguration.skipSplash {
-                MainView(
-                    isUITesting: launchConfiguration.isUITesting,
-                    uiTestScenario: launchConfiguration.uiTestScenario
-                )
-            } else {
-                SplashView(
-                    isUITesting: launchConfiguration.isUITesting,
-                    uiTestScenario: launchConfiguration.uiTestScenario
-                )
+            Group {
+                if launchConfiguration.skipSplash {
+                    MainView(
+                        authenticationService: authenticationService,
+                        isUITesting: launchConfiguration.isUITesting,
+                        uiTestScenario: launchConfiguration.uiTestScenario
+                    )
+                } else {
+                    SplashView(
+                        authenticationService: authenticationService,
+                        isUITesting: launchConfiguration.isUITesting,
+                        uiTestScenario: launchConfiguration.uiTestScenario
+                    )
+                }
+            }
+            .task {
+                guard !launchConfiguration.isUITesting else { return }
+                authenticationService.start()
             }
         }
     }

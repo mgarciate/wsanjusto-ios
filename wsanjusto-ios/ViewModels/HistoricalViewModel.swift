@@ -12,10 +12,11 @@ class HistoricalViewModel: ObservableObject {
         self.measuresLoader = measuresLoader
     }
 
-    func fetchData() {
+    @discardableResult
+    func fetchData() -> Task<Void, Never> {
         fetchTask?.cancel()
         loadingState = .loading
-        fetchTask = Task { @MainActor [weak self, measuresLoader] in
+        let task = Task { @MainActor [weak self, measuresLoader] in
             do {
                 let measures = try await measuresLoader.fetchMeasures(limit: 100)
                 try Task.checkCancellation()
@@ -29,5 +30,7 @@ class HistoricalViewModel: ObservableObject {
                 self?.loadingState = .failed
             }
         }
+        fetchTask = task
+        return task
     }
 }
