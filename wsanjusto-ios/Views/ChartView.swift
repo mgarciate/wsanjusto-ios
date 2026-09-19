@@ -76,18 +76,30 @@ struct ChartView: View {
                         )
                         Chart(viewModel.chartData) {
                             LineMark(
-                                x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.measure.createdAt))),
+                                x: .value("Hora", $0.date),
                                 y: .value(viewModel.selectedMetric.title, $0.value)
                             )
                             .foregroundStyle(chartColor.gradient)
                             .interpolationMethod(.catmullRom)
                             AreaMark(
-                                x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.measure.createdAt))),
+                                x: .value("Hora", $0.date),
                                 yStart: .value(viewModel.selectedMetric.title, $0.value),
                                 yEnd: .value("Base", viewModel.chartDomain.lowerBound)
                             )
                             .foregroundStyle(chartColor.opacity(0.1).gradient)
                             .interpolationMethod(.catmullRom)
+                            if let windDirection = $0.displayedWindDirection {
+                                PointMark(
+                                    x: .value("Hora", $0.date),
+                                    y: .value(viewModel.selectedMetric.title, $0.value)
+                                )
+                                .foregroundStyle(chartColor)
+                                .symbol {
+                                    Image(systemName: "location.north.fill")
+                                        .font(.caption2)
+                                        .rotationEffect(.degrees(Double(windDirection)))
+                                }
+                            }
 //                        .symbol {
 //                            Circle()
 //                                .fill(Color.green)
@@ -173,7 +185,7 @@ struct ChartView: View {
         guard let touchedDate: Date = proxy.value(atX: plotX),
               let point = viewModel.closestDataPoint(to: touchedDate) else { return nil }
         guard let xLocation = proxy.position(
-            forX: Date(timeIntervalSince1970: TimeInterval(point.measure.createdAt))
+            forX: point.date
         ), let yLocation = proxy.position(forY: point.value) else { return nil }
         touchLocation = CGPoint(
             x: xLocation + plotFrame.origin.x,

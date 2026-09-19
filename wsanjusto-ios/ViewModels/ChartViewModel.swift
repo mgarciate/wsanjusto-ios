@@ -73,7 +73,9 @@ enum ChartMetric: String, CaseIterable, Identifiable, Sendable {
 
 struct ChartDataPoint: Identifiable, Sendable {
     let measure: Measure
+    let date: Date
     let value: Double
+    let displayedWindDirection: Int?
 
     var id: UUID { measure.id }
 }
@@ -168,6 +170,7 @@ class MeasuresLoadingViewModel: ObservableObject {
 @MainActor
 final class ChartViewModel: MeasuresLoadingViewModel {
     private static let defaultDate = "-"
+    private static let calmWindSpeedThreshold = 0.5
     @Published private var selectedMeasure: Measure?
     @Published var selectedMetric: ChartMetric = .temperature {
         didSet {
@@ -189,9 +192,24 @@ final class ChartViewModel: MeasuresLoadingViewModel {
     var chartData: [ChartDataPoint] {
         measures.compactMap { measure in
             guard let value = selectedMetric.value(from: measure) else { return nil }
-            return ChartDataPoint(measure: measure, value: value)
+            return ChartDataPoint(
+                measure: measure,
+                date: Date(timeIntervalSince1970: TimeInterval(measure.createdAt)),
+                value: value,
+                displayedWindDirection: displayedWindDirection(for: measure, value: value)
+            )
         }
         .sorted { $0.measure.createdAt < $1.measure.createdAt }
+    }
+
+    private func displayedWindDirection(for measure: Measure, value: Double) -> Int? {
+        guard selectedMetric == .windSpeed,
+              value > Self.calmWindSpeedThreshold,
+              let windDirection = measure.windDir,
+              (0...360).contains(windDirection) else {
+            return nil
+        }
+        return windDirection % 360
     }
 
     var chartDomain: ClosedRange<Double> {
