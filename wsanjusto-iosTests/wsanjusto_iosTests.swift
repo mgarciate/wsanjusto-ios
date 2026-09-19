@@ -375,6 +375,71 @@ struct ChartViewModelTests {
         #expect(viewModel.chartDomain == 0...2.5)
     }
 
+    @Test func exposesOnlyDisplayableWindDirections() throws {
+        let calm = try #require(makeMeasure(timestamp: 100, windSpeed: 0, windDirection: 90))
+        let nearCalm = try #require(makeMeasure(
+            timestamp: 200,
+            uid: 43,
+            windSpeed: 0.5,
+            windDirection: 180
+        ))
+        let windy = try #require(makeMeasure(
+            timestamp: 300,
+            uid: 44,
+            windSpeed: 0.51,
+            windDirection: 270
+        ))
+        let fullTurn = try #require(makeMeasure(
+            timestamp: 400,
+            uid: 45,
+            windSpeed: 1,
+            windDirection: 360
+        ))
+        let invalidDirection = try #require(makeMeasure(
+            timestamp: 500,
+            uid: 46,
+            windSpeed: 2,
+            windDirection: 361
+        ))
+        let negativeDirection = try #require(makeMeasure(
+            timestamp: 600,
+            uid: 47,
+            windSpeed: 3,
+            windDirection: -1
+        ))
+        let missingDirection = try #require(makeMeasure(
+            timestamp: 700,
+            uid: 48,
+            windSpeed: 4
+        ))
+        let viewModel = ChartViewModel()
+        viewModel.update(measures: [
+            calm,
+            nearCalm,
+            windy,
+            fullTurn,
+            invalidDirection,
+            negativeDirection,
+            missingDirection
+        ])
+        viewModel.selectedMetric = .windSpeed
+
+        #expect(viewModel.chartData.count == 7)
+        #expect(viewModel.chartData.map(\.displayedWindDirection) == [
+            nil,
+            nil,
+            270,
+            0,
+            nil,
+            nil,
+            nil
+        ])
+
+        viewModel.selectedMetric = .temperature
+
+        #expect(viewModel.chartData.allSatisfy { $0.displayedWindDirection == nil })
+    }
+
     @Test func omitsMeasuresWithoutTheSelectedMetric() throws {
         let available = try #require(makeMeasure(windSpeed: 12))
         let unavailable = try #require(makeMeasure(uid: 43))
@@ -927,6 +992,7 @@ private func makeMeasure(
     timestamp: Int = 1_700_000_000,
     uid: Int = 42,
     windSpeed: Double? = nil,
+    windDirection: Int? = nil,
     precipitation: Double? = nil,
     iconCode: Int? = nil,
     sunriseTimeLocal: String? = nil,
@@ -938,6 +1004,7 @@ private func makeMeasure(
     dictionary["createdAt"] = timestamp
     dictionary["uid"] = uid
     dictionary["windSpeed"] = windSpeed
+    dictionary["winddir"] = windDirection
     dictionary["precipTotal"] = precipitation
     dictionary["iconCode"] = iconCode
     dictionary["sunriseTimeLocal"] = sunriseTimeLocal
