@@ -362,15 +362,13 @@ struct ChartViewModelTests {
 
 @MainActor
 struct MeasuresLoadingViewModelTests {
-    @Test func usesTheExpectedLimitForEachScreen() async {
+    @Test func chartUsesTheExpectedLimit() async {
         let loader = RecordingMeasuresLoader(result: .success([]))
         let chartViewModel = ChartViewModel(measuresLoader: loader)
-        let historicalViewModel = HistoricalViewModel(measuresLoader: loader)
 
         await chartViewModel.fetchData().value
-        await historicalViewModel.fetchData().value
 
-        #expect(await loader.requestedLimits() == [150, 100])
+        #expect(await loader.requestedLimits() == [150])
     }
 
     @Test func chartClearsSelectionWhenFetching() async throws {
@@ -386,18 +384,14 @@ struct MeasuresLoadingViewModelTests {
         await task.value
     }
 
-    @Test func emptyResponsesProduceEmptyState() async {
+    @Test func chartEmptyResponseProducesEmptyState() async {
         let loader = StubMeasuresLoader(result: .success([]))
         let chartViewModel = ChartViewModel(measuresLoader: loader)
-        let historicalViewModel = HistoricalViewModel(measuresLoader: loader)
 
         await chartViewModel.fetchData().value
-        await historicalViewModel.fetchData().value
 
         #expect(chartViewModel.measures.isEmpty)
         #expect(chartViewModel.loadingState == .empty)
-        #expect(historicalViewModel.measures.isEmpty)
-        #expect(historicalViewModel.loadingState == .empty)
     }
 
     @Test func chartFetchesMeasuresAndStopsLoading() async throws {
@@ -431,33 +425,6 @@ struct MeasuresLoadingViewModelTests {
         #expect(viewModel.loadingState == .failed)
     }
 
-    @Test func historicalFetchesMeasuresAndStopsLoading() async throws {
-        let measure = try #require(makeMeasure())
-        let loader = StubMeasuresLoader(result: .success([measure]))
-        let viewModel = HistoricalViewModel(measuresLoader: loader)
-
-        viewModel.fetchData()
-        let didFinish = await waitUntilFinished(viewModel: viewModel)
-
-        #expect(didFinish)
-        #expect(viewModel.measures.count == 1)
-        #expect(!viewModel.isLoading)
-        #expect(viewModel.loadingState == .loaded)
-    }
-
-    @Test func historicalClearsMeasuresAfterLoadingError() async {
-        let loader = StubMeasuresLoader(result: .failure(TestError.expected))
-        let viewModel = HistoricalViewModel(measuresLoader: loader)
-
-        viewModel.fetchData()
-        let didFinish = await waitUntilFinished(viewModel: viewModel)
-
-        #expect(didFinish)
-        #expect(viewModel.measures.isEmpty)
-        #expect(!viewModel.isLoading)
-        #expect(viewModel.loadingState == .failed)
-    }
-
     @Test func chartIgnoresFailureFromSupersededRequest() async throws {
         let latestMeasure = try #require(makeMeasure(temperature: 23))
         let loader = ControlledMeasuresLoader()
@@ -479,24 +446,197 @@ struct MeasuresLoadingViewModelTests {
         #expect(viewModel.loadingState == .loaded)
     }
 
-    @Test func historicalIgnoresFailureFromSupersededRequest() async throws {
-        let latestMeasure = try #require(makeMeasure(temperature: 24))
-        let loader = ControlledMeasuresLoader()
-        let viewModel = HistoricalViewModel(measuresLoader: loader)
+}
+
+@MainActor
+struct HistoricalViewModelTests {
+    @Test func loadsTheFirstPageWithFiftyEntries() async throws {
+        let measure = try #require(makeMeasure(uid: 1))
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [measure], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+
+        #expect(viewModel.measures.map(\.uid) == [1])
+        #expect(viewModel.loadingState == .loaded)
+        #expect(!viewModel.hasMore)
+        #expect(await loader.requestedLimits() == [50])
+        #expect(await loader.requestedCursors() == [nil])
+    }
+
+    @Test func emptyFirstPageProducesEmptyState() async {
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+
+        #expect(viewModel.measures.isEmpty)
+        #expect(viewModel.loadingState == .empty)
+    }
+
+    @Test func failedFirstPageProducesFailedState() async {
+        let loader = RecordingHistoricalLoader(results: [.failure(TestError.expected)])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+
+        #expect(viewModel.measures.isEmpty)
+        #expect(viewModel.loadingState == .failed)
+    }
+
+    @Test func appendsTheNextPageUsingThePreviousCursor() async throws {
+        let first = try #require(makeMeasure(uid: 1))
+        let second = try #require(makeMeasure(uid: 2))
+        let cursor = HistoricalPageCursor(orderByDate: 100, key: "first")
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [first], cursor: cursor, hasMore: true)),
+            .success(page(measures: [second], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+        await viewModel.loadNextPage()?.value
+
+        #expect(viewModel.measures.map(\.uid) == [1, 2])
+        #expect(await loader.requestedLimits() == [50, 50])
+        #expect(await loader.requestedCursors() == [nil, cursor])
+        #expect(!viewModel.hasMore)
+    }
+
+    @Test func removesDuplicatesAtPageBoundaries() async throws {
+        let first = try #require(makeMeasure(uid: 1))
+        let second = try #require(makeMeasure(uid: 2))
+        let cursor = HistoricalPageCursor(orderByDate: 100, key: "first")
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [first], cursor: cursor, hasMore: true)),
+            .success(page(measures: [first, second], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+        await viewModel.loadNextPage()?.value
+
+        #expect(viewModel.measures.map(\.uid) == [1, 2])
+    }
+
+    @Test func removesDuplicatesWithinTheSamePage() async throws {
+        let first = try #require(makeMeasure(uid: 1))
+        let duplicate = try #require(makeMeasure(temperature: 24, uid: 1))
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [first, duplicate], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+
+        #expect(viewModel.measures.map(\.uid) == [1])
+        #expect(viewModel.measures.first?.sensorTemperature1 == 19.5)
+    }
+
+    @Test func preservesLoadedEntriesAndCanRetryAfterPageFailure() async throws {
+        let first = try #require(makeMeasure(uid: 1))
+        let second = try #require(makeMeasure(uid: 2))
+        let cursor = HistoricalPageCursor(orderByDate: 100, key: "first")
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [first], cursor: cursor, hasMore: true)),
+            .failure(TestError.expected),
+            .success(page(measures: [second], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+        await viewModel.loadNextPage()?.value
+
+        #expect(viewModel.measures.map(\.uid) == [1])
+        #expect(viewModel.pageLoadFailed)
+        #expect(viewModel.loadingState == .loaded)
+
+        await viewModel.loadNextPage()?.value
+
+        #expect(viewModel.measures.map(\.uid) == [1, 2])
+        #expect(!viewModel.pageLoadFailed)
+    }
+
+    @Test func doesNotRequestAnotherPageAfterTheEnd() async {
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+        let nextTask = viewModel.loadNextPage()
+
+        #expect(nextTask == nil)
+        #expect(await loader.requestedLimits() == [50])
+    }
+
+    @Test func refreshReplacesPreviouslyLoadedPages() async throws {
+        let first = try #require(makeMeasure(uid: 1))
+        let replacement = try #require(makeMeasure(uid: 3))
+        let loader = RecordingHistoricalLoader(results: [
+            .success(page(measures: [first], hasMore: false)),
+            .success(page(measures: [replacement], hasMore: false))
+        ])
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        await viewModel.fetchData().value
+        await viewModel.fetchData().value
+
+        #expect(viewModel.measures.map(\.uid) == [3])
+    }
+
+    @Test func ignoresConcurrentPageRequests() async throws {
+        let first = try #require(makeMeasure(uid: 1))
+        let second = try #require(makeMeasure(uid: 2))
+        let cursor = HistoricalPageCursor(orderByDate: 100, key: "first")
+        let loader = ControlledHistoricalLoader()
+        let viewModel = HistoricalViewModel(loader: loader)
+
+        let initialTask = viewModel.fetchData()
+        try #require(await loader.waitForRequestCount(1))
+        #expect(viewModel.loadNextPage() == nil)
+        await loader.resumeRequest(
+            at: 0,
+            with: .success(page(measures: [first], cursor: cursor, hasMore: true))
+        )
+        await initialTask.value
+
+        let nextTask = try #require(viewModel.loadNextPage())
+        try #require(await loader.waitForRequestCount(2))
+        #expect(viewModel.loadNextPage() == nil)
+        await loader.resumeRequest(
+            at: 1,
+            with: .success(page(measures: [second], hasMore: false))
+        )
+        await nextTask.value
+
+        #expect(viewModel.measures.map(\.uid) == [1, 2])
+        #expect(await loader.requestCount() == 2)
+    }
+
+    @Test func ignoresFailureFromASupersededRefresh() async throws {
+        let latestMeasure = try #require(makeMeasure(uid: 2))
+        let loader = ControlledHistoricalLoader()
+        let viewModel = HistoricalViewModel(loader: loader)
 
         let supersededTask = viewModel.fetchData()
-        let firstRequestStarted = await loader.waitForRequestCount(1)
-        try #require(firstRequestStarted)
+        try #require(await loader.waitForRequestCount(1))
         let latestTask = viewModel.fetchData()
-        let secondRequestStarted = await loader.waitForRequestCount(2)
-        try #require(secondRequestStarted)
+        try #require(await loader.waitForRequestCount(2))
 
-        await loader.resumeRequest(at: 1, with: .success([latestMeasure]))
+        await loader.resumeRequest(
+            at: 1,
+            with: .success(page(measures: [latestMeasure], hasMore: false))
+        )
         await latestTask.value
         await loader.resumeRequest(at: 0, with: .failure(TestError.expected))
         await supersededTask.value
 
-        #expect(viewModel.measures.first?.sensorTemperature1 == 24)
+        #expect(viewModel.measures.map(\.uid) == [2])
         #expect(viewModel.loadingState == .loaded)
     }
 }
@@ -582,6 +722,76 @@ private actor ControlledMeasuresLoader: MeasuresLoading {
     }
 }
 
+private actor RecordingHistoricalLoader: HistoricalMeasuresLoading {
+    private let results: [Result<HistoricalPage, Error>]
+    private var limits: [UInt] = []
+    private var cursors: [HistoricalPageCursor?] = []
+
+    init(results: [Result<HistoricalPage, Error>]) {
+        self.results = results
+    }
+
+    func fetchPage(
+        limit: UInt,
+        after cursor: HistoricalPageCursor?
+    ) async throws -> HistoricalPage {
+        let requestIndex = limits.count
+        limits.append(limit)
+        cursors.append(cursor)
+        return try results[requestIndex].get()
+    }
+
+    func requestedLimits() -> [UInt] {
+        limits
+    }
+
+    func requestedCursors() -> [HistoricalPageCursor?] {
+        cursors
+    }
+}
+
+private actor ControlledHistoricalLoader: HistoricalMeasuresLoading {
+    private var continuations: [CheckedContinuation<HistoricalPage, Error>] = []
+
+    func fetchPage(
+        limit: UInt,
+        after cursor: HistoricalPageCursor?
+    ) async throws -> HistoricalPage {
+        try await withCheckedThrowingContinuation { continuation in
+            continuations.append(continuation)
+        }
+    }
+
+    func waitForRequestCount(_ count: Int) async -> Bool {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .seconds(5))
+        while continuations.count < count {
+            guard clock.now < deadline else { return false }
+            await Task.yield()
+        }
+        return true
+    }
+
+    func resumeRequest(
+        at index: Int,
+        with result: Result<HistoricalPage, Error>
+    ) {
+        continuations[index].resume(with: result)
+    }
+
+    func requestCount() -> Int {
+        continuations.count
+    }
+}
+
+private func page(
+    measures: [Measure],
+    cursor: HistoricalPageCursor? = nil,
+    hasMore: Bool
+) -> HistoricalPage {
+    HistoricalPage(measures: measures, nextCursor: cursor, hasMore: hasMore)
+}
+
 @MainActor
 private func waitUntilFinished(viewModel: ChartViewModel) async -> Bool {
     let clock = ContinuousClock()
@@ -644,6 +854,7 @@ private func makeMeasureDictionary() -> [String: Any] {
 private func makeMeasure(
     temperature: Double = 19.5,
     humidity: Double = 65,
+    uid: Int = 42,
     iconCode: Int? = nil,
     sunriseTimeLocal: String? = nil,
     sunsetTimeLocal: String? = nil
@@ -651,6 +862,7 @@ private func makeMeasure(
     var dictionary = makeMeasureDictionary()
     dictionary["sensorTemperature1"] = temperature
     dictionary["sensorHumidity1"] = humidity
+    dictionary["uid"] = uid
     dictionary["iconCode"] = iconCode
     dictionary["sunriseTimeLocal"] = sunriseTimeLocal
     dictionary["sunsetTimeLocal"] = sunsetTimeLocal

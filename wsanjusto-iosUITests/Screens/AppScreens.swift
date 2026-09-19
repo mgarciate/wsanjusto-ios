@@ -141,6 +141,14 @@ struct HistoryScreen {
             .waitForExistence(timeout: 5)
     }
 
+    func revealSecondPage() -> Bool {
+        let firstSecondPageRow = app.descendants(matching: .any)["history.row.51"]
+        for _ in 0..<15 where !firstSecondPageRow.isHittable {
+            app.swipeUp()
+        }
+        return firstSecondPageRow.waitForExistence(timeout: 5)
+    }
+
     func waitForEmptyState() -> Bool {
         app.staticTexts["history.empty"].waitForExistence(timeout: 5)
     }
