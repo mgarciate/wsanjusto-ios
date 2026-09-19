@@ -110,7 +110,7 @@ struct ChartScreen {
     let app: XCUIApplication
 
     func waitForLoadedContent() -> Bool {
-        app.staticTexts["chart.selectedTemperature"].waitForExistence(timeout: 5)
+        app.staticTexts["chart.selectedValue"].waitForExistence(timeout: 5)
     }
 
     func waitForEmptyState() -> Bool {
@@ -121,8 +121,16 @@ struct ChartScreen {
         app.staticTexts["chart.error"].waitForExistence(timeout: 5)
     }
 
-    var selectedTemperature: String {
-        app.staticTexts["chart.selectedTemperature"].label
+    var selectedValue: String {
+        app.staticTexts["chart.selectedValue"].label
+    }
+
+    func selectWind() {
+        app.buttons["Viento"].tap()
+    }
+
+    func selectPrecipitation() {
+        app.buttons["Precipitación"].tap()
     }
 
     var isLoading: Bool {

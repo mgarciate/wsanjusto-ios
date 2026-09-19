@@ -9,11 +9,11 @@ import SwiftUI
 import Charts
 
 struct ChartView: View {
-    @ObservedObject private var viewModel: ChartViewModel
+    @StateObject private var viewModel: ChartViewModel
     @State private var touchLocation: CGPoint? = nil
 
     init(viewModel: ChartViewModel = ChartViewModel()) {
-        self.viewModel = viewModel
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     // TODO: Remove test values
 //    let measures: [Measure] = {
@@ -53,31 +53,48 @@ struct ChartView: View {
                     .foregroundColor(Color("PrimaryColor"))
             } else {
                 VStack {
-                    ChartSelectionHeader(
-                        selectedDate: viewModel.selectedDate,
-                        selectedTemperature: viewModel.selectedTemperature
-                    )
-                    Chart(viewModel.measures) {
-                        LineMark(
-                            x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
-                            y: .value("Temperatura", $0.sensorTemperature1)
+                    Picker("Magnitud", selection: $viewModel.selectedMetric) {
+                        ForEach(ChartMetric.allCases) { metric in
+                            Text(metric.title)
+                                .tag(metric)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("chart.metricPicker")
+                    .padding(.horizontal)
+
+                    if viewModel.chartData.isEmpty {
+                        Text("No hay datos de \(viewModel.selectedMetric.title.lowercased()) disponibles")
+                            .accessibilityIdentifier("chart.metricEmpty")
+                            .foregroundColor(Color("PrimaryColor"))
+                            .frame(maxHeight: .infinity)
+                    } else {
+                        ChartSelectionHeader(
+                            selectedDate: viewModel.selectedDate,
+                            metricTitle: viewModel.selectedMetric.title,
+                            selectedValue: viewModel.selectedValue
                         )
-                        .foregroundStyle(Color("Green").gradient)
-                        .interpolationMethod(.catmullRom)
-                        AreaMark(
-                            x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.createdAt))),
-                            yStart: .value("Temperatura", $0.sensorTemperature1),
-                            yEnd: .value("TemperaturaEnd", viewModel.domainMeasuresFrom)
-                        )
-                        .foregroundStyle(Color("Green").opacity(0.1).gradient)
-                        .interpolationMethod(.catmullRom)
+                        Chart(viewModel.chartData) {
+                            LineMark(
+                                x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.measure.createdAt))),
+                                y: .value(viewModel.selectedMetric.title, $0.value)
+                            )
+                            .foregroundStyle(chartColor.gradient)
+                            .interpolationMethod(.catmullRom)
+                            AreaMark(
+                                x: .value("Hora", Date(timeIntervalSince1970: TimeInterval($0.measure.createdAt))),
+                                yStart: .value(viewModel.selectedMetric.title, $0.value),
+                                yEnd: .value("Base", viewModel.chartDomain.lowerBound)
+                            )
+                            .foregroundStyle(chartColor.opacity(0.1).gradient)
+                            .interpolationMethod(.catmullRom)
 //                        .symbol {
 //                            Circle()
 //                                .fill(Color.green)
 //                                .frame(width: 4, height: 4)
 //                        }
                     }
-                    .chartYScale(domain: viewModel.domainMeasuresFrom...viewModel.domainMeasuresTo)
+                    .chartYScale(domain: viewModel.chartDomain)
                     .chartXAxis {
                         AxisMarks(preset: .extended, values: .automatic) { value in
                             AxisValueLabel(format: .dateTime.hour())
@@ -85,7 +102,7 @@ struct ChartView: View {
                         }
                     }
                     .chartYAxis {
-                        AxisMarks(preset: .extended, position: .trailing, values: .stride(by: 2))
+                        AxisMarks(preset: .extended, position: .trailing, values: .automatic)
                     }
                     .chartOverlay { proxy in
                         GeometryReader { geometry in
@@ -93,21 +110,33 @@ struct ChartView: View {
                                 Rectangle().fill(.clear).contentShape(Rectangle())
                                     .gesture(DragGesture()
                                         .onChanged { value in
-                                            guard let measure = findClosestMeasure(to: value.location, proxy: proxy, geometry: geometry) else { return }
+                                            guard let measure = findClosestMeasure(
+                                                to: value.location,
+                                                proxy: proxy,
+                                                geometry: geometry
+                                            ) else { return }
                                             viewModel.select(measure: measure)
                                         }
                                     )
                                     .onTapGesture { location in
-                                        guard let measure = findClosestMeasure(to: location, proxy: proxy, geometry: geometry) else { return }
+                                        guard let measure = findClosestMeasure(
+                                            to: location,
+                                            proxy: proxy,
+                                            geometry: geometry
+                                        ) else { return }
                                         viewModel.select(measure: measure)
                                 }
                                 if let touchLocation {
-                                    ChartCrosshair(location: touchLocation, size: geometry.size)
+                                    ChartCrosshair(
+                                        location: touchLocation,
+                                        plotFrame: geometry[proxy.plotAreaFrame]
+                                    )
                                 }
                             }
                         }
                     }
-                .padding()
+                    .padding()
+                    }
                 }
             }
         }
@@ -121,33 +150,43 @@ struct ChartView: View {
                 touchLocation = nil
             }
         }
+        .onChange(of: viewModel.selectedMetric) { _ in
+            touchLocation = nil
+        }
+    }
+
+    private var chartColor: Color {
+        switch viewModel.selectedMetric {
+        case .temperature:
+            Color("Green")
+        case .windSpeed:
+            .blue
+        case .precipitation:
+            .cyan
+        }
     }
     
     private func findClosestMeasure(to location: CGPoint, proxy: ChartProxy, geometry: GeometryProxy) -> Measure? {
-        let plotSizeWidth: CGFloat
-        if #available(iOS 17.0, *) {
-            plotSizeWidth = proxy.plotSize.width
-        } else {
-            plotSizeWidth = geometry[proxy.plotAreaFrame].width
-        }
-        guard !viewModel.measures.isEmpty,
-              location.x >= 0,
-              location.x < plotSizeWidth,
-              let firstTimestamp = viewModel.measures.last?.createdAt,
-              let lastTimestamp = viewModel.measures.first?.createdAt else { return nil }
-        let xScaleFactor = CGFloat(lastTimestamp - firstTimestamp) / plotSizeWidth
-        let touchedTimestamp = firstTimestamp + Int(location.x * xScaleFactor)
-        guard let measure = viewModel.measures.min(by: { abs($0.createdAt - touchedTimestamp) < abs($1.createdAt - touchedTimestamp) }) else { return nil }
-        let xLocation = plotSizeWidth * CGFloat(measure.createdAt - firstTimestamp) / CGFloat(lastTimestamp - firstTimestamp)
-        guard let yLocation = proxy.position(forY: measure.sensorTemperature1) else { return nil }
-        touchLocation = CGPoint(x: xLocation, y: yLocation)
-        return measure
+        let plotFrame = geometry[proxy.plotAreaFrame]
+        guard plotFrame.contains(location) else { return nil }
+        let plotX = location.x - plotFrame.origin.x
+        guard let touchedDate: Date = proxy.value(atX: plotX),
+              let point = viewModel.closestDataPoint(to: touchedDate) else { return nil }
+        guard let xLocation = proxy.position(
+            forX: Date(timeIntervalSince1970: TimeInterval(point.measure.createdAt))
+        ), let yLocation = proxy.position(forY: point.value) else { return nil }
+        touchLocation = CGPoint(
+            x: xLocation + plotFrame.origin.x,
+            y: yLocation + plotFrame.origin.y
+        )
+        return point.measure
     }
 }
 
 private struct ChartSelectionHeader: View {
     let selectedDate: String
-    let selectedTemperature: String
+    let metricTitle: String
+    let selectedValue: String
 
     var body: some View {
         HStack {
@@ -160,10 +199,10 @@ private struct ChartSelectionHeader: View {
                     .bold()
             }
             HStack(spacing: 5) {
-                Text("Temperatura:")
+                Text("\(metricTitle):")
                     .font(.caption)
-                Text(selectedTemperature)
-                    .accessibilityIdentifier("chart.selectedTemperature")
+                Text(selectedValue)
+                    .accessibilityIdentifier("chart.selectedValue")
                     .font(.caption)
                     .bold()
             }
@@ -179,18 +218,18 @@ private struct ChartSelectionHeader: View {
 
 private struct ChartCrosshair: View {
     let location: CGPoint
-    let size: CGSize
+    let plotFrame: CGRect
 
     var body: some View {
         ZStack {
             Path { path in
-                path.move(to: CGPoint(x: location.x, y: 0))
-                path.addLine(to: CGPoint(x: location.x, y: size.height))
+                path.move(to: CGPoint(x: location.x, y: plotFrame.minY))
+                path.addLine(to: CGPoint(x: location.x, y: plotFrame.maxY))
             }
             .stroke(Color("RedDarkColor"), lineWidth: 1)
             Path { path in
-                path.move(to: CGPoint(x: 0, y: location.y))
-                path.addLine(to: CGPoint(x: size.width, y: location.y))
+                path.move(to: CGPoint(x: plotFrame.minX, y: location.y))
+                path.addLine(to: CGPoint(x: plotFrame.maxX, y: location.y))
             }
             .stroke(Color("RedDarkColor"), lineWidth: 1)
             Circle()
