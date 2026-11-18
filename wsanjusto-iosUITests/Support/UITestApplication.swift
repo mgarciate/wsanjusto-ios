@@ -15,7 +15,13 @@ func launchApplication(scenario: UITestScenario = .success) -> XCUIApplication {
         "-UITestingScenario",
         scenario.rawValue
     ]
+    app.terminate()
     app.launch()
+    if !app.wait(for: .runningForeground, timeout: 10) {
+        app.terminate()
+        app.launch()
+        _ = app.wait(for: .runningForeground, timeout: 10)
+    }
     return app
 }
 

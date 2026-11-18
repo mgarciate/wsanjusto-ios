@@ -34,9 +34,7 @@ struct MainScreen {
 struct DashboardScreen {
     let app: XCUIApplication
 
-    private var dashboardScroll: XCUIElement {
-        app.scrollViews["dashboard.scroll"]
-    }
+    private var dashboardScroll: XCUIElement { app.scrollViews.firstMatch }
 
     func waitForTemperature() -> Bool {
         app.staticTexts["dashboard.temperature"].waitForExistence(timeout: 5)
@@ -64,7 +62,6 @@ struct DashboardScreen {
 
     func revealForecast() -> Bool {
         let title = app.staticTexts["dashboard.forecast.title"]
-        guard title.waitForExistence(timeout: 5) else { return false }
         return scrollVertically(to: title)
     }
 
@@ -75,10 +72,7 @@ struct DashboardScreen {
             "dashboard.forecast.temperature.last"
         ]
         let forecastScroll = app.scrollViews["dashboard.forecast.scroll"]
-        guard forecastScroll.waitForExistence(timeout: 5),
-              lastTemperature.waitForExistence(timeout: 5) else {
-            return false
-        }
+        guard forecastScroll.waitForExistence(timeout: 5) else { return false }
         for _ in 0..<5 where !isVisible(lastTemperature, in: forecastScroll) {
             forecastScroll.swipeLeft()
         }
