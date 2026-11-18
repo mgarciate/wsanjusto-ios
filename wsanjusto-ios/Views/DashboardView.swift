@@ -55,6 +55,7 @@ struct DashboardView: View {
                 }
                 .padding(.top)
             }
+            .accessibilityIdentifier("dashboard.scroll")
         }
         .accessibilityIdentifier("dashboard.screen")
         .onReceive(authService.$user) { user in

@@ -34,6 +34,10 @@ struct MainScreen {
 struct DashboardScreen {
     let app: XCUIApplication
 
+    private var dashboardScroll: XCUIElement {
+        app.scrollViews["dashboard.scroll"]
+    }
+
     func waitForTemperature() -> Bool {
         app.staticTexts["dashboard.temperature"].waitForExistence(timeout: 5)
     }
@@ -59,7 +63,9 @@ struct DashboardScreen {
     }
 
     func revealForecast() -> Bool {
-        scrollVertically(to: app.staticTexts["dashboard.forecast.title"])
+        let title = app.staticTexts["dashboard.forecast.title"]
+        guard title.waitForExistence(timeout: 5) else { return false }
+        return scrollVertically(to: title)
     }
 
     func revealLastForecast() -> Bool {
@@ -69,6 +75,10 @@ struct DashboardScreen {
             "dashboard.forecast.temperature.last"
         ]
         let forecastScroll = app.scrollViews["dashboard.forecast.scroll"]
+        guard forecastScroll.waitForExistence(timeout: 5),
+              lastTemperature.waitForExistence(timeout: 5) else {
+            return false
+        }
         for _ in 0..<5 where !isVisible(lastTemperature, in: forecastScroll) {
             forecastScroll.swipeLeft()
         }
@@ -92,10 +102,11 @@ struct DashboardScreen {
     }
 
     private func scrollVertically(to element: XCUIElement) -> Bool {
-        for _ in 0..<8 where !element.isHittable {
-            app.swipeUp()
+        guard dashboardScroll.waitForExistence(timeout: 5) else { return false }
+        for _ in 0..<8 where !isVisible(element, in: dashboardScroll) {
+            dashboardScroll.swipeUp()
         }
-        return element.isHittable
+        return isVisible(element, in: dashboardScroll)
     }
 
     private func isVisible(_ element: XCUIElement, in container: XCUIElement) -> Bool {
